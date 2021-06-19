@@ -1,0 +1,12 @@
+parameters:
+    level: max
+    paths:
+        - src
+        - tests
+        - config
+        - public
+
+    checkMissingIterableValueType: true
+    checkGenericClassInNonGenericObjectType: true
+    symfony:
+        container_xml_path: var/cache/dev/App_KernelDevDebugContainer.xml

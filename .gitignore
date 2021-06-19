@@ -1,0 +1,27 @@
+###> symfony/framework-bundle ###
+weather_forecast/.env.local
+weather_forecast/.env.dev
+weather_forecast/.env.test
+weather_forecast/.env.local.php
+weather_forecast/.env.*.local
+weather_forecast/config/secrets/prod/prod.decrypt.private.php
+weather_forecast/public/bundles/
+weather_forecast/var/
+weather_forecast/vendor/
+###< symfony/framework-bundle ###
+
+###> symfony/phpunit-bridge ###
+weather_forecast/.phpunit.result.cache
+###< symfony/phpunit-bridge ###
+
+###> phpunit/phpunit ###
+weather_forecast/phpunit.xml
+weather_forecast/.phpunit.result.cache
+###< phpunit/phpunit ###
+
+###> friendsofphp/php-cs-fixer ###
+weather_forecast/.php-cs-fixer.php
+weather_forecast/.php-cs-fixer.cache
+weather_forecast/phpstan.neon
+.idea/
+###< friendsofphp/php-cs-fixer ###
