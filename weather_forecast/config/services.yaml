@@ -4,6 +4,9 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
+    api.musement.url: 'https://api.musement.com/api/v3'
+    api.weatherapi.url: 'http://api.weatherapi.com/v1'
+    api.weatherapi.key: '%env(WEATHER_API_KEY)%'
 
 services:
     # default configuration for services in *this* file
@@ -21,5 +24,29 @@ services:
             - '../src/Kernel.php'
             - '../src/Tests/'
 
-    # add more service definitions when explicit configuration is needed
-    # please note that last definitions always *replace* previous ones
+    App\Infrastructure\Command\WeatherForecast:
+        tags:
+            - { name: 'console.command', command: 'app:weather_forecast' }
+
+    App\Application\Serializer\MusementCitySerializer:
+        factory: ['@App\Factory\JsonArraySerializerFactory', 'build']
+
+    App\Application\Serializer\MusementCityWeatherForecastDaySerializer:
+        factory: ['@App\Application\Factory\MusementCityForecastSerializerFactory', 'build']
+
+    App\Application\Handler\MusementCityApiHandler:
+        class: App\Application\Handler\MusementCityApiHandler
+        arguments:
+            $serializer: '@App\Application\Serializer\MusementCitySerializer'
+            $url: '%api.musement.url%'
+
+    App\Application\Handler\MusementCityForecastApiHandler:
+        class: App\Application\Handler\MusementCityForecastApiHandler
+        arguments:
+            $serializer: '@App\Application\Serializer\MusementCityWeatherForecastDaySerializer'
+            $url: '%api.weatherapi.url%'
+
+    App\Application\WeatherForecastIdentifier:
+        arguments:
+            $key: '%api.weatherapi.key%'
+            $notifier: '@logger'
