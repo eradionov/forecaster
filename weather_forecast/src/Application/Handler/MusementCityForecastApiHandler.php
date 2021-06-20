@@ -15,7 +15,7 @@ use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
-final class MusementCityForecastApiHandler implements ApiRequestHandlerInterface
+class MusementCityForecastApiHandler implements ApiRequestHandlerInterface
 {
     private const API_CITY_FORECAST_ENDPOINT = '/forecast.json';
 
