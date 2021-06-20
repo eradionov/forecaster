@@ -8,5 +8,8 @@ parameters:
 
     checkMissingIterableValueType: true
     checkGenericClassInNonGenericObjectType: true
+    excludePaths:
+        analyseAndScan:
+            - src/Serializer/Normalizer/CityWeatherForecastDayNormalizer
     symfony:
         container_xml_path: var/cache/dev/App_KernelDevDebugContainer.xml
