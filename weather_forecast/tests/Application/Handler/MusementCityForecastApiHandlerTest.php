@@ -8,4 +8,7 @@ use PHPUnit\Framework\TestCase;
 
 class MusementCityForecastApiHandlerTest extends TestCase
 {
+    public function testCase() {
+        self::assertEmpty('');
+    }
 }
