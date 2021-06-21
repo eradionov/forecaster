@@ -21,6 +21,20 @@ final class CityWeatherForecast
     private array $forecasts;
 
     /**
+     * @param array{city: string, forecasts: array<int, string>} $data
+     *
+     * @return CityWeatherForecast
+     */
+    public static function fromArray(array $data): self
+    {
+        $cityWeatherForecast = new self();
+        $cityWeatherForecast->setCity($data['city']);
+        $cityWeatherForecast->setCityForecastDays($data['forecasts']);
+
+        return $cityWeatherForecast;
+    }
+
+    /**
      * @return string
      */
     public function getCity(): string

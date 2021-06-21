@@ -17,7 +17,7 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class MusementCityApiHandler implements ApiRequestHandlerInterface
 {
-    private const API_CITIES_ENDPOINT = '/cities';
+    private const API_CITIES_ENDPOINT = '/cities.json';
 
     private HttpClientInterface $httpClient;
     private SerializerInterface $serializer;

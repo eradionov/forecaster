@@ -46,7 +46,12 @@ services:
             $serializer: '@App\Application\Serializer\MusementCityWeatherForecastDaySerializer'
             $url: '%api.weatherapi.url%'
 
-    App\Application\WeatherForecastIdentifier:
+    App\Application\WeatherForecastDetector:
         arguments:
             $key: '%api.weatherapi.key%'
             $notifier: '@logger'
+
+    App\Application\Renderer\ConsoleWeatherForecastRenderer:
+        class: App\Application\Renderer\ConsoleWeatherForecastRenderer
+        arguments:
+            $logger: '@logger'
