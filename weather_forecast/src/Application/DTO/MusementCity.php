@@ -24,6 +24,21 @@ final class MusementCity
     private float $longitude;
 
     /**
+     * @param array{name: string, latitude: float, longitude: float} $data
+     *
+     * @return MusementCity
+     */
+    public static function fromArray(array $data): self
+    {
+        $musementCity = new self();
+        $musementCity->setName($data['name']);
+        $musementCity->setLatitude($data['latitude']);
+        $musementCity->setLongitude($data['longitude']);
+
+        return $musementCity;
+    }
+
+    /**
      * @param string $name
      */
     public function setName(string $name): void

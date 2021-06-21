@@ -16,7 +16,7 @@ weather_forecast/.phpunit.result.cache
 
 ###> phpunit/phpunit ###
 weather_forecast/phpunit.xml
-weather_forecast/.phpunit.result.cache
+.phpunit.result.cache
 ###< phpunit/phpunit ###
 
 ###> friendsofphp/php-cs-fixer ###

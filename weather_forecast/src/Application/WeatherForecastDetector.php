@@ -6,44 +6,48 @@ namespace App\Application;
 
 use App\Application\DTO\CityWeatherForecast;
 use App\Application\DTO\MusementCity;
-use App\Application\Formatter\ForecastFormatter;
+use App\Application\Renderer\WeatherForecastRendererInterface;
 use App\Application\Repository\ApiHandlerRepositoryInterface;
 use App\Utils\RequestParams;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Validator\ConstraintViolationList;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-final class WeatherForecastIdentifier
+final class WeatherForecastDetector
 {
     private const REQUESTED_FORECAST_DAYS = 2;
-    private const ERROR_MESSAGE = '<error>Processing of response from \'%s\' fails due to validation error.</error>Please see log for details';
 
     private ApiHandlerRepositoryInterface $musementApiRepository;
     private ValidatorInterface $validator;
     private LoggerInterface $notifier;
+    private WeatherForecastRendererInterface $renderer;
     private string $key;
 
     /**
      * @param ApiHandlerRepositoryInterface $musementApiRepository
      * @param ValidatorInterface $validator
      * @param LoggerInterface $notifier
+     * @param WeatherForecastRendererInterface $renderer
      * @param string $key
      */
     public function __construct(
         ApiHandlerRepositoryInterface $musementApiRepository,
         ValidatorInterface $validator,
         LoggerInterface $notifier,
+        WeatherForecastRendererInterface $renderer,
         string $key
     ) {
         $this->musementApiRepository = $musementApiRepository;
         $this->validator = $validator;
         $this->key = $key;
         $this->notifier = $notifier;
+        $this->renderer = $renderer;
     }
 
-    public function displayCitiesWithWeatherForecast(): void
+    public function detect(): void
     {
         $cities = $this->musementApiRepository->getMusementCityApiHandler()->fetch();
+        $hasErrors = false;
 
         if (count($cities) === 0) {
             $this->notifier->info('There were no cities returned from \'Musement API\'');
@@ -56,7 +60,7 @@ final class WeatherForecastIdentifier
             $errors = $this->validator->validate($city);
 
             if (count($errors) > 0) {
-                $this->notifier->error(sprintf(self::ERROR_MESSAGE, 'Musement API'));
+                $hasErrors = true;
 
                 /* @phpstan-ignore-next-line */
                 $this->notifier->debug((string) $errors);
@@ -64,13 +68,22 @@ final class WeatherForecastIdentifier
                 continue;
             }
 
-            $cityForecast = $this->getCityForecast($city);
+            try {
+                $cityForecast = $this->getCityForecast($city);
 
-            if (!$cityForecast) {
-                continue;
+                if (!$cityForecast) {
+                    continue;
+                }
+
+                $this->renderer->render($cityForecast);
+            } catch (\Throwable $exception) {
+                $hasErrors = true;
+                $this->notifier->debug($exception->getMessage());
             }
+        }
 
-            $this->notifier->notice(ForecastFormatter::format($cityForecast));
+        if ($hasErrors) {
+            $this->notifier->error('Some errors occurred during processing, please see log for details.');
         }
     }
 
@@ -95,8 +108,6 @@ final class WeatherForecastIdentifier
         $errors = $this->validator->validate($cityWeatherForecast);
 
         if (count($errors) > 0) {
-            $this->notifier->error(sprintf(self::ERROR_MESSAGE, 'Weather API'));
-
             /* @phpstan-ignore-next-line */
             $this->notifier->debug((string) $errors);
 

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Command;
 
-use App\Application\WeatherForecastIdentifier;
+use App\Application\WeatherForecastDetector;
 use App\Exception\HttpResponseException;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
@@ -14,22 +14,22 @@ use Symfony\Contracts\HttpClient\Exception\ExceptionInterface;
 
 final class WeatherForecast extends Command
 {
-    private WeatherForecastIdentifier $weatherForecastIdentifier;
+    private WeatherForecastDetector $weatherForecastDetector;
     private LoggerInterface $logger;
 
     /**
-     * @param WeatherForecastIdentifier $weatherForecastIdentifier
+     * @param WeatherForecastDetector $weatherForecastDetector
      * @param LoggerInterface $logger
      * @param string|null $name
      */
     public function __construct(
-        WeatherForecastIdentifier $weatherForecastIdentifier,
+        WeatherForecastDetector $weatherForecastDetector,
         LoggerInterface $logger,
         string $name = null
     ) {
         parent::__construct($name);
 
-        $this->weatherForecastIdentifier = $weatherForecastIdentifier;
+        $this->weatherForecastDetector = $weatherForecastDetector;
         $this->logger = $logger;
     }
 
@@ -39,7 +39,7 @@ final class WeatherForecast extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         try {
-            $this->weatherForecastIdentifier->displayCitiesWithWeatherForecast();
+            $this->weatherForecastDetector->detect();
 
             return self::SUCCESS;
         } catch (HttpResponseException | ExceptionInterface $exception) {

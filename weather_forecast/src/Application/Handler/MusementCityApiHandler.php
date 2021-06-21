@@ -15,9 +15,9 @@ use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
-final class MusementCityApiHandler implements ApiRequestHandlerInterface
+class MusementCityApiHandler implements ApiRequestHandlerInterface
 {
-    private const API_CITIES_ENDPOINT = '/cities';
+    private const API_CITIES_ENDPOINT = '/cities.json';
 
     private HttpClientInterface $httpClient;
     private SerializerInterface $serializer;
