@@ -36,6 +36,8 @@ setupPackages () {
 
 echo -e "${COLOUR_GREEN}Setting up environment...${RESET}"
 
+# Copying phpunit.xml.dist into phpunit.xml
+
 if [ ! -f "${PROJECT_DIR}/phpunit.xml" ] && [ -f "${PROJECT_DIR}/phpunit.xml.dist" ]
 then
     echo -e "${COLOUR_GREEN}Configuring phpunit settings...${RESET}"
@@ -45,6 +47,8 @@ else
   echo -e "${RED}phpunit.xml already exists.${RESET}"
 fi
 
+# Copying phpstan.neon.dist into phpstan.neon
+
 if [ ! -f "${PROJECT_DIR}/phpstan.neon" ] && [ -f "${PROJECT_DIR}/phpstan.neon.dist" ]
 then
     echo -e "${COLOUR_GREEN}Configuring phpstan settings...${RESET}"
@@ -53,6 +57,19 @@ then
 else
   echo -e "${RED}phpstan.neon already exists.${RESET}"
 fi
+
+# Copying .php-cs-fixer.dist.php into .php-cs-fixer.php
+
+if [ ! -f "${PROJECT_DIR}/.php-cs-fixer.php" ] && [ -f "${PROJECT_DIR}/.php-cs-fixer.dist.php" ]
+then
+    echo -e "${COLOUR_GREEN}Configuring php-cs-fixer settings...${RESET}"
+
+    cp "${PROJECT_DIR}/.php-cs-fixer.dist.php" "${PROJECT_DIR}/.php-cs-fixer.php"
+else
+  echo -e "${RED}.php-cs-fixer.php already exists.${RESET}"
+fi
+
+# Copying .env.dist into .env.dev and setting up environment variables
 
 if [ ! -f "${PROJECT_DIR}/.env.dev" ] && [ -f "${PROJECT_DIR}/.env.dist" ]
 then
