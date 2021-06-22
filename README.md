@@ -1,3 +1,7 @@
+# Developer
+
+Yauheni Radzivonau
+
 # Weather Forecast for musement cities
 
 Weather Forecast is a symfony command, that displays forecast for each musement city for today and tomorrow
