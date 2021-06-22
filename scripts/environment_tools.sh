@@ -2,7 +2,7 @@
 
 if [[ $_ != $0 ]]
 then
-  echo "Please, execute script from directory directly"
+  echo "Please, execute script from scripts directory directly"
   exit 1
 fi
 
@@ -12,23 +12,29 @@ COLOUR_GREEN=`tput setaf 2`
 RESET=`tput sgr0`
 
 case $1 in
-     'phpunit')
+     '--phpunit'|'-pu')
           docker-compose run weather_forecast_php_cli composer phpunit
           ;;
-     'fixer')
+     '--fixer'|'-cs')
           docker-compose run weather_forecast_php_cli composer cs-fixer
           ;;
-     'phpstan')
+     '--phpstan'|'-ps')
           docker-compose run weather_forecast_php_cli composer phpstan
           ;;
-     '--help')
-          echo "Usage: environment_tools ${COLOUR_GREEN}[options]${RESET}"
+     '--all'|'-a')
+          docker-compose run weather_forecast_php_cli composer phpunit
+          docker-compose run weather_forecast_php_cli composer cs-fixer
+          docker-compose run weather_forecast_php_cli composer phpstan
+          ;;
+     '--help'|'-h')
+          echo "Usage: environment_tools ${COLOUR_GREEN}[option]${RESET}"
           echo
-          echo "Examples:"
           echo
-          echo "  ${COLOUR_GREEN}environment_tools phpstan${RESET}"
-          echo "  ${COLOUR_GREEN}environment_tools fixer${RESET}"
-          echo "  ${COLOUR_GREEN}environment_tools phpunit${RESET}"
+          echo "  -pu,  --phpunit         Run phpunit tests"
+          echo "  -cs,  --fixer           Run php-cs-fixer"
+          echo "  -ps,  --phpstan         Run phpstan analyzer"
+          echo "  -a,   --all             Run all tools"
+          echo "  -h,   --help            Run help"
           exit 1
           ;;
 esac

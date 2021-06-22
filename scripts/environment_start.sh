@@ -2,7 +2,7 @@
 
 if [[ $_ != $0 ]]
 then
-  echo "Please, execute script from directory directly"
+  echo "Please, execute script from scripts directory directly"
   exit 1
 fi
 
@@ -11,21 +11,19 @@ COLOUR_GREEN=`tput setaf 2`
 RESET=`tput sgr0`
 
 case $1 in
-     '--d')
+     '--detach'|'-d')
           docker-compose up -d
           ;;
-     '--stop')
+     '--stop'|'-s')
           docker-compose down
           ;;
-     '--help')
-          echo "Usage: environment_start ${COLOUR_GREEN}[options]${RESET}"
+     '--help'|'-h')
+          echo "Usage: environment_start ${COLOUR_GREEN}[option]${RESET}"
           echo
-          echo "Examples:"
           echo
-          echo "  ${COLOUR_GREEN}environment_start --d${RESET}     - Start docker-compose in detached mode"
-          echo "  ${COLOUR_GREEN}environment_start --stop${RESET}  - Stop docker-compose"
-          echo "  ${COLOUR_GREEN}environment_start --help${RESET}  - Display help"
-          echo "  ${COLOUR_GREEN}environment_start${RESET}         - Start docker-compose and show output in console"
+          echo "  -d,  --detach           Run docker container in detached mode"
+          echo "  -s,  --stop             Stop docker container"
+          echo "  -h,  --help             Run help"
           ;;
      *)
           docker-compose up
