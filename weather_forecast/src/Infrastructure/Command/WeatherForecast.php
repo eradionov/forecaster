@@ -4,16 +4,20 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Command;
 
+use App\Application\Exception\MusementCityProcessingException;
 use App\Application\WeatherForecastDetector;
 use App\Exception\HttpResponseException;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Contracts\HttpClient\Exception\ExceptionInterface;
 
 final class WeatherForecast extends Command
 {
+    private const ARGUMENT_DAYS = 'days';
+
     private WeatherForecastDetector $weatherForecastDetector;
     private LoggerInterface $logger;
 
@@ -33,16 +37,26 @@ final class WeatherForecast extends Command
         $this->logger = $logger;
     }
 
+    protected function configure()
+    {
+        $this->addArgument(
+            self::ARGUMENT_DAYS,
+            InputArgument::OPTIONAL,
+            'Number of days to generate forecast.',
+            2
+        );
+    }
+
     /**
      * {@inheritdoc}
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         try {
-            $this->weatherForecastDetector->detect();
+            $this->weatherForecastDetector->detect((int) $input->getArgument(self::ARGUMENT_DAYS));
 
             return self::SUCCESS;
-        } catch (HttpResponseException | ExceptionInterface $exception) {
+        } catch (HttpResponseException | ExceptionInterface | MusementCityProcessingException $exception) {
             $output->writeln(sprintf('<error>%s</error>', $exception->getMessage()));
         } catch (\Throwable $exception) {
             $output->writeln('<error>Unexpected error occurred, please see logs for details.</error>');

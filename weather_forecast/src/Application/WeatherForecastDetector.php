@@ -6,17 +6,21 @@ namespace App\Application;
 
 use App\Application\DTO\CityWeatherForecast;
 use App\Application\DTO\MusementCity;
+use App\Application\Exception\MusementCityProcessingException;
 use App\Application\Renderer\WeatherForecastRendererInterface;
 use App\Application\Repository\ApiHandlerRepositoryInterface;
+use App\Exception\HttpResponseException;
 use App\Utils\RequestParams;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Validator\ConstraintViolationList;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
 final class WeatherForecastDetector
 {
-    private const REQUESTED_FORECAST_DAYS = 2;
-
     private ApiHandlerRepositoryInterface $musementApiRepository;
     private ValidatorInterface $validator;
     private LoggerInterface $notifier;
@@ -44,8 +48,23 @@ final class WeatherForecastDetector
         $this->renderer = $renderer;
     }
 
-    public function detect(): void
+    /**
+     * @param int $days
+     *
+     * @throws MusementCityProcessingException if errors were detected during validation, API call and processing.
+     * @throws HttpResponseException if response code is not 200.
+     * @throws TransportExceptionInterface When a network error occurs
+     * @throws RedirectionExceptionInterface On a 3xx when $throw is true and the "max_redirects" option has been reached
+     * @throws ClientExceptionInterface On a 4xx when $throw is true
+     * @throws ServerExceptionInterface On a 5xx when $throw is true
+     * @throws \InvalidArgumentException if number of days to forecast weather is <= 0.
+     */
+    public function detect(int $days): void
     {
+        if ($days <= 0) {
+            throw new \InvalidArgumentException('Number of days to forecast weather should be positive.');
+        }
+
         $cities = $this->musementApiRepository->getMusementCityApiHandler()->fetch();
         $hasErrors = false;
 
@@ -69,9 +88,11 @@ final class WeatherForecastDetector
             }
 
             try {
-                $cityForecast = $this->getCityForecast($city);
+                $cityForecast = $this->getCityForecast($city, $days);
 
                 if (!$cityForecast) {
+                    $hasErrors = true;
+
                     continue;
                 }
 
@@ -83,20 +104,21 @@ final class WeatherForecastDetector
         }
 
         if ($hasErrors) {
-            $this->notifier->error('Some errors occurred during processing, please see log for details.');
+            throw new MusementCityProcessingException();
         }
     }
 
     /**
      * @param MusementCity $city
+     * @param int $days
      *
      * @return CityWeatherForecast|null
      */
-    private function getCityForecast(MusementCity $city): ?CityWeatherForecast
+    private function getCityForecast(MusementCity $city, int $days): ?CityWeatherForecast
     {
         $cityWeatherForecast = $this->musementApiRepository->getMusementCityForecaseApiHandler()->fetch(
             RequestParams::create([
-                'days' => self::REQUESTED_FORECAST_DAYS,
+                'days' => $days,
                 'q' => sprintf('%f,%f', $city->getLatitude(), $city->getLongitude()),
             ],
                 [
