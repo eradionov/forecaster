@@ -12,13 +12,10 @@ use App\Application\Handler\MusementCityForecastApiHandler;
 use App\Application\Renderer\WeatherForecastRendererInterface;
 use App\Application\Repository\ApiHandlerRepositoryInterface;
 use App\Application\WeatherForecastDetector;
-use App\Utils\RequestParams;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\Validator\ConstraintViolationList;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
-use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 final class WeatherForecastDetectorTest extends TestCase
 {
@@ -43,7 +40,8 @@ final class WeatherForecastDetectorTest extends TestCase
     /** @var ApiRequestHandlerInterface&MockObject */
     private ApiRequestHandlerInterface $musementCityForecastApiHandler;
 
-    protected function setUp():void {
+    protected function setUp(): void
+    {
         $this->musementApiRepository = $this->createMock(ApiHandlerRepositoryInterface::class);
         $this->validator = $this->createMock(ValidatorInterface::class);
         $this->notifier = $this->createMock(LoggerInterface::class);
@@ -108,7 +106,7 @@ final class WeatherForecastDetectorTest extends TestCase
     /**
      * @dataProvider getMusementApiResponse
      *
-     * @param array<int, array{name: string, latitude: float, longitude: float}> $responseData
+     * @param array{name: string, latitude: float, longitude: float} $responseData
      */
     public function testValidMusementCityWithoutForecast(array $responseData): void
     {
@@ -132,8 +130,8 @@ final class WeatherForecastDetectorTest extends TestCase
      * @doesNotPerformAssertions
      * @dataProvider getMusementApiResponse
      *
-     * @param array<int, array{name: string, latitude: float, longitude: float}> $responseData
-     * @param array<int, {city: string, forecasts: array}> $forecasts
+     * @param array{name: string, latitude: float, longitude: float} $responseData
+     * @param array{city: string, forecasts: array} $forecasts
      */
     public function testValidMusementCityWithForecasts(array $responseData, array $forecasts): void
     {
@@ -154,7 +152,7 @@ final class WeatherForecastDetectorTest extends TestCase
     }
 
     /**
-     * @return array<int, array{name: string, latitude: float, longitude: float}>
+     * @return array<int, array>
      */
     public function getMusementApiResponse(): array
     {

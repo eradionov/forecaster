@@ -17,6 +17,7 @@ use Symfony\Contracts\HttpClient\Exception\ExceptionInterface;
 final class WeatherForecast extends Command
 {
     private const ARGUMENT_DAYS = 'days';
+    private const DEFAULT_DAYS = 2;
 
     private WeatherForecastDetector $weatherForecastDetector;
     private LoggerInterface $logger;
@@ -37,13 +38,17 @@ final class WeatherForecast extends Command
         $this->logger = $logger;
     }
 
-    protected function configure()
+    /**
+     * {@inheritdoc}
+     */
+    protected function configure(): void
     {
-        $this->addArgument(
+        $this->addOption(
             self::ARGUMENT_DAYS,
+            null,
             InputArgument::OPTIONAL,
             'Number of days to generate forecast.',
-            2
+            strval(self::DEFAULT_DAYS)
         );
     }
 
@@ -53,7 +58,11 @@ final class WeatherForecast extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         try {
-            $this->weatherForecastDetector->detect((int) $input->getArgument(self::ARGUMENT_DAYS));
+            if (is_string($input->getOption(self::ARGUMENT_DAYS))) {
+                $days = (int) $input->getOption(self::ARGUMENT_DAYS);
+            }
+
+            $this->weatherForecastDetector->detect($days ?? self::DEFAULT_DAYS);
 
             return self::SUCCESS;
         } catch (HttpResponseException | ExceptionInterface | MusementCityProcessingException $exception) {
