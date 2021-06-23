@@ -38,7 +38,7 @@ class MusementCityForecastApiHandler implements ApiRequestHandlerInterface
     /**
      * @param RequestParams|null $requestParams
      *
-     * @return CityWeatherForecast
+     * @return mixed
      *
      * @throws HttpResponseException if response code is not 200.
      * @throws TransportExceptionInterface When a network error occurs
@@ -46,12 +46,12 @@ class MusementCityForecastApiHandler implements ApiRequestHandlerInterface
      * @throws ClientExceptionInterface On a 4xx when $throw is true
      * @throws ServerExceptionInterface On a 5xx when $throw is true
      */
-    public function fetch(RequestParams $requestParams = null): CityWeatherForecast
+    public function fetch(RequestParams $requestParams = null)
     {
         $response = $this->httpClient->request(
             'GET',
             $this->endpoint,
-            $requestParams ? $requestParams->toArray() : []
+            $requestParams !== null ? $requestParams->toArray() : []
         );
 
         if ($response->getStatusCode() !== Response::HTTP_OK) {

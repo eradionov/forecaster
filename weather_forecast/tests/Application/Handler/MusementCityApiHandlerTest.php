@@ -44,7 +44,7 @@ class MusementCityApiHandlerTest extends TestCase
 
         $response = $apiHandler->fetch();
 
-        self::assertEmpty($response);
+        self::assertNull($response);
     }
 
     public function testHttpExceptionResponse(): void
@@ -94,7 +94,6 @@ class MusementCityApiHandlerTest extends TestCase
 
         $response = $apiHandler->fetch();
 
-        self::assertIsArray($response);
         self::assertNotEmpty($response);
         self::assertEquals($musementCityMock, $response[0]);
     }

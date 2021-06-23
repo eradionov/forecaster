@@ -16,9 +16,11 @@ final class MusementCityForecastDenormalizer implements DenormalizerInterface
     {
         $cityForecastDays = [];
 
-        if (isset($data['forecast']) && isset($data['forecast']['forecastday'])) {
+        if (isset($data['forecast'], $data['forecast']['forecastday'])) {
             foreach ($data['forecast']['forecastday'] as $decodedResponse) {
-                $cityForecastDays[] = $decodedResponse['day']['condition']['text'];
+                if (isset($decodedResponse['day'], $decodedResponse['day']['condition'], $decodedResponse['day']['condition']['text'])) {
+                    $cityForecastDays[] = $decodedResponse['day']['condition']['text'];
+                }
             }
         }
 

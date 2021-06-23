@@ -3,13 +3,11 @@ parameters:
     paths:
         - src
         - tests
-        - config
-        - public
 
     checkMissingIterableValueType: true
     checkGenericClassInNonGenericObjectType: true
     excludePaths:
         analyseAndScan:
-            - src/Serializer/Normalizer/CityWeatherForecastDayNormalizer
+            - tests/bootstrap.php
     symfony:
         container_xml_path: var/cache/dev/App_KernelDevDebugContainer.xml

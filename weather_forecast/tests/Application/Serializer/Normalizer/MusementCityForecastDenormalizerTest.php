@@ -10,15 +10,6 @@ use PHPUnit\Framework\TestCase;
 
 final class MusementCityForecastDenormalizerTest extends TestCase
 {
-    public function testCorrectInstanceReturned(): void
-    {
-        $type = CityWeatherForecast::class;
-
-        $response = (new MusementCityForecastDenormalizer())->denormalize([], $type);
-
-        self::assertInstanceOf($type, $response);
-    }
-
     /**
      * @dataProvider getResponseWithForecasts
      *
