@@ -68,7 +68,7 @@ final class WeatherForecastDetector
         $cities = $this->musementCityApiFetcher->fetch();
         $hasErrors = false;
 
-        if (count($cities) === 0) {
+        if (\count($cities) === 0) {
             $this->consoleNotifier->info('There were no cities returned from \'Musement API\'');
 
             return;
@@ -78,7 +78,7 @@ final class WeatherForecastDetector
             /* @var ConstraintViolationList $errors */
             $errors = $this->validator->validate($city);
 
-            if (count($errors) > 0) {
+            if (\count($errors) > 0) {
                 $hasErrors = true;
 
                 /* @phpstan-ignore-next-line */
@@ -126,7 +126,7 @@ final class WeatherForecastDetector
 
         $errors = $this->validator->validate($cityWeatherForecast);
 
-        if (count($errors) > 0) {
+        if (\count($errors) > 0) {
             /* @phpstan-ignore-next-line */
             $this->consoleNotifier->debug((string) $errors);
 
