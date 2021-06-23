@@ -24,34 +24,17 @@ services:
             - '../src/Kernel.php'
             - '../src/Tests/'
 
-    App\Infrastructure\Command\WeatherForecast:
+    App\Command\WeatherForecast:
         tags:
             - { name: 'console.command', command: 'app:weather_forecast' }
 
-    App\Application\Serializer\MusementCitySerializer:
-        factory: ['@App\Factory\JsonArraySerializerFactory', 'build']
+    App\Serializer\MusementApiSerializer:
+        factory: ['@App\Factory\MusementApiSerializerFactory', 'build']
 
-    App\Application\Serializer\MusementCityWeatherForecastDaySerializer:
-        factory: ['@App\Application\Factory\MusementCityForecastSerializerFactory', 'build']
+    App\Fetcher\MusementCityApiFetcher: ~
+    App\Fetcher\MusementCityForecastApiFetcher: ~
 
-    App\Application\Handler\MusementCityApiHandler:
-        class: App\Application\Handler\MusementCityApiHandler
-        arguments:
-            $serializer: '@App\Application\Serializer\MusementCitySerializer'
-            $url: '%api.musement.url%'
-
-    App\Application\Handler\MusementCityForecastApiHandler:
-        class: App\Application\Handler\MusementCityForecastApiHandler
-        arguments:
-            $serializer: '@App\Application\Serializer\MusementCityWeatherForecastDaySerializer'
-            $url: '%api.weatherapi.url%'
-
-    App\Application\WeatherForecastDetector:
-        arguments:
-            $key: '%api.weatherapi.key%'
-            $notifier: '@logger'
-
-    App\Application\Renderer\ConsoleWeatherForecastRenderer:
-        class: App\Application\Renderer\ConsoleWeatherForecastRenderer
-        arguments:
-            $logger: '@logger'
+    App\Fetcher\ApiRequestFetcherInterface $musementCityApiFetcher: '@App\Fetcher\MusementCityApiFetcher'
+    App\Fetcher\ApiRequestFetcherInterface $musementCityForecastApiFetcher: '@App\Fetcher\MusementCityForecastApiFetcher'
+    Psr\Log\LoggerInterface $consoleNotifier: '@logger'
+    Symfony\Component\Serializer\SerializerInterface $apiMusementSerialiser: '@App\Serializer\MusementApiSerializer'
