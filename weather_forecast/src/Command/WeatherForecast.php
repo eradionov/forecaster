@@ -6,7 +6,7 @@ namespace App\Command;
 
 use App\Exception\HttpResponseException;
 use App\Exception\MusementCityProcessingException;
-use App\WeatherForecastDetector;
+use App\WeatherForecast\WeatherForecastDetector;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;

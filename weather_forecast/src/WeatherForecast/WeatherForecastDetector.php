@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App;
+namespace App\WeatherForecast;
 
 use App\DTO\CityWeatherForecast;
 use App\DTO\MusementCity;
@@ -24,27 +24,27 @@ final class WeatherForecastDetector
     private ApiRequestFetcherInterface $musementCityApiFetcher;
     private ApiRequestFetcherInterface $musementCityForecastApiFetcher;
     private ValidatorInterface $validator;
-    private LoggerInterface $notifier;
+    private LoggerInterface $consoleNotifier;
     private WeatherForecastRendererInterface $renderer;
 
     /**
      * @param ApiRequestFetcherInterface $musementCityApiFetcher
      * @param ApiRequestFetcherInterface $musementCityForecastApiFetcher
      * @param ValidatorInterface $validator
-     * @param LoggerInterface $notifier
+     * @param LoggerInterface $consoleNotifier
      * @param WeatherForecastRendererInterface $renderer
      */
     public function __construct(
         ApiRequestFetcherInterface $musementCityApiFetcher,
         ApiRequestFetcherInterface $musementCityForecastApiFetcher,
         ValidatorInterface $validator,
-        LoggerInterface $notifier,
+        LoggerInterface $consoleNotifier,
         WeatherForecastRendererInterface $renderer
     ) {
         $this->musementCityApiFetcher = $musementCityApiFetcher;
         $this->musementCityForecastApiFetcher = $musementCityForecastApiFetcher;
         $this->validator = $validator;
-        $this->notifier = $notifier;
+        $this->consoleNotifier = $consoleNotifier;
         $this->renderer = $renderer;
     }
 
@@ -69,7 +69,7 @@ final class WeatherForecastDetector
         $hasErrors = false;
 
         if (count($cities) === 0) {
-            $this->notifier->info('There were no cities returned from \'Musement API\'');
+            $this->consoleNotifier->info('There were no cities returned from \'Musement API\'');
 
             return;
         }
@@ -82,7 +82,7 @@ final class WeatherForecastDetector
                 $hasErrors = true;
 
                 /* @phpstan-ignore-next-line */
-                $this->notifier->debug((string) $errors);
+                $this->consoleNotifier->debug((string) $errors);
 
                 continue;
             }
@@ -99,7 +99,7 @@ final class WeatherForecastDetector
                 $this->renderer->render($cityForecast);
             } catch (\Throwable $exception) {
                 $hasErrors = true;
-                $this->notifier->debug($exception->getMessage());
+                $this->consoleNotifier->debug($exception->getMessage());
             }
         }
 
@@ -128,7 +128,7 @@ final class WeatherForecastDetector
 
         if (count($errors) > 0) {
             /* @phpstan-ignore-next-line */
-            $this->notifier->debug((string) $errors);
+            $this->consoleNotifier->debug((string) $errors);
 
             return null;
         }

@@ -10,14 +10,14 @@ use Psr\Log\LoggerInterface;
 
 final class ConsoleWeatherForecastRenderer implements WeatherForecastRendererInterface
 {
-    private LoggerInterface $logger;
+    private LoggerInterface $consoleNotifier;
 
     /**
-     * @param LoggerInterface $logger
+     * @param LoggerInterface $consoleNotifier
      */
-    public function __construct(LoggerInterface $logger)
+    public function __construct(LoggerInterface $consoleNotifier)
     {
-        $this->logger = $logger;
+        $this->consoleNotifier = $consoleNotifier;
     }
 
     /**
@@ -25,6 +25,6 @@ final class ConsoleWeatherForecastRenderer implements WeatherForecastRendererInt
      */
     public function render(CityWeatherForecast $weatherForecast): void
     {
-        $this->logger->notice(ForecastFormatter::format($weatherForecast));
+        $this->consoleNotifier->notice(ForecastFormatter::format($weatherForecast));
     }
 }

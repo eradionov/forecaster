@@ -34,16 +34,7 @@ services:
     App\Fetcher\MusementCityApiFetcher: ~
     App\Fetcher\MusementCityForecastApiFetcher: ~
 
-    App\WeatherForecastDetector:
-        arguments:
-            $notifier: '@logger'
-
-    Symfony\Component\Serializer\SerializerInterface: '@App\Serializer\MusementApiSerializer'
-
     App\Fetcher\ApiRequestFetcherInterface $musementCityApiFetcher: '@App\Fetcher\MusementCityApiFetcher'
     App\Fetcher\ApiRequestFetcherInterface $musementCityForecastApiFetcher: '@App\Fetcher\MusementCityForecastApiFetcher'
-
-    App\Renderer\ConsoleWeatherForecastRenderer:
-        class: App\Renderer\ConsoleWeatherForecastRenderer
-        arguments:
-            $logger: '@logger'
+    Psr\Log\LoggerInterface $consoleNotifier: '@logger'
+    Symfony\Component\Serializer\SerializerInterface $apiMusementSerialiser: '@App\Serializer\MusementApiSerializer'
