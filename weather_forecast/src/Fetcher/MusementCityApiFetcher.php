@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Application\Fetcher;
+namespace App\Fetcher;
 
 use App\Exception\HttpResponseException;
 use App\Utils\RequestParams;
@@ -55,7 +55,7 @@ class MusementCityApiFetcher implements ApiRequestFetcherInterface
         }
 
         return $this->serializer->deserialize(
-            $response->getContent(), 'App\Application\DTO\MusementCity[]', 'json'
+            $response->getContent(), 'App\DTO\MusementCity[]', 'json'
         );
     }
 }

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Application\Serializer\Denormalizer;
+namespace App\Serializer\Denormalizer;
 
-use App\Application\DTO\CityWeatherForecast;
+use App\DTO\CityWeatherForecast;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 

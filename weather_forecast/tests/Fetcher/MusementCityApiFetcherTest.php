@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Tests\Fetcher;
 
-use App\Application\DTO\MusementCity;
-use App\Application\Fetcher\MusementCityApiFetcher;
+use App\DTO\MusementCity;
 use App\Factory\MusementApiSerializerFactory;
+use App\Fetcher\MusementCityApiFetcher;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Response;

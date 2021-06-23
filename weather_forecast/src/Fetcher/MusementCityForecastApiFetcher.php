@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Application\Fetcher;
+namespace App\Fetcher;
 
-use App\Application\DTO\CityWeatherForecast;
+use App\DTO\CityWeatherForecast;
 use App\Exception\HttpResponseException;
 use App\Utils\RequestParams;
 use Symfony\Component\HttpFoundation\Response;

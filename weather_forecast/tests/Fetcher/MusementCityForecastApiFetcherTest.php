@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Tests\Fetcher;
 
-use App\Application\DTO\CityWeatherForecast;
-use App\Application\Fetcher\MusementCityForecastApiFetcher;
+use App\DTO\CityWeatherForecast;
 use App\Factory\MusementApiSerializerFactory;
+use App\Fetcher\MusementCityForecastApiFetcher;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Response;

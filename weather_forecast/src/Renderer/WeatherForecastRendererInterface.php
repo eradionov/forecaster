@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Application\Renderer;
+namespace App\Renderer;
 
-use App\Application\DTO\CityWeatherForecast;
+use App\DTO\CityWeatherForecast;
 
 interface WeatherForecastRendererInterface
 {

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Application\Formatter;
+namespace App\Formatter;
 
-use App\Application\DTO\CityWeatherForecast;
+use App\DTO\CityWeatherForecast;
 
 final class ForecastFormatter
 {

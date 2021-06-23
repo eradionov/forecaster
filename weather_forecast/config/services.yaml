@@ -24,26 +24,26 @@ services:
             - '../src/Kernel.php'
             - '../src/Tests/'
 
-    App\Infrastructure\Command\WeatherForecast:
+    App\Command\WeatherForecast:
         tags:
             - { name: 'console.command', command: 'app:weather_forecast' }
 
-    App\Application\Serializer\MusementApiSerializer:
+    App\Serializer\MusementApiSerializer:
         factory: ['@App\Factory\MusementApiSerializerFactory', 'build']
 
-    App\Application\Fetcher\MusementCityApiFetcher: ~
-    App\Application\Fetcher\MusementCityForecastApiFetcher: ~
+    App\Fetcher\MusementCityApiFetcher: ~
+    App\Fetcher\MusementCityForecastApiFetcher: ~
 
-    App\Application\WeatherForecastDetector:
+    App\WeatherForecastDetector:
         arguments:
             $notifier: '@logger'
 
-    Symfony\Component\Serializer\SerializerInterface: '@App\Application\Serializer\MusementApiSerializer'
+    Symfony\Component\Serializer\SerializerInterface: '@App\Serializer\MusementApiSerializer'
 
-    App\Application\Fetcher\ApiRequestFetcherInterface $musementCityApiFetcher: '@App\Application\Fetcher\MusementCityApiFetcher'
-    App\Application\Fetcher\ApiRequestFetcherInterface $musementCityForecastApiFetcher: '@App\Application\Fetcher\MusementCityForecastApiFetcher'
+    App\Fetcher\ApiRequestFetcherInterface $musementCityApiFetcher: '@App\Fetcher\MusementCityApiFetcher'
+    App\Fetcher\ApiRequestFetcherInterface $musementCityForecastApiFetcher: '@App\Fetcher\MusementCityForecastApiFetcher'
 
-    App\Application\Renderer\ConsoleWeatherForecastRenderer:
-        class: App\Application\Renderer\ConsoleWeatherForecastRenderer
+    App\Renderer\ConsoleWeatherForecastRenderer:
+        class: App\Renderer\ConsoleWeatherForecastRenderer
         arguments:
             $logger: '@logger'

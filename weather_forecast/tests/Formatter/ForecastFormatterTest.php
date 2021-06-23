@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Formatter;
 
-use App\Application\DTO\CityWeatherForecast;
-use App\Application\Formatter\ForecastFormatter;
+use App\DTO\CityWeatherForecast;
+use App\Formatter\ForecastFormatter;
 use PHPUnit\Framework\TestCase;
 
 final class ForecastFormatterTest extends TestCase

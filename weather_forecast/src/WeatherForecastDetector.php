@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Application;
+namespace App;
 
-use App\Application\DTO\CityWeatherForecast;
-use App\Application\DTO\MusementCity;
-use App\Application\Exception\MusementCityProcessingException;
-use App\Application\Fetcher\ApiRequestFetcherInterface;
-use App\Application\Renderer\WeatherForecastRendererInterface;
+use App\DTO\CityWeatherForecast;
+use App\DTO\MusementCity;
 use App\Exception\HttpResponseException;
+use App\Exception\MusementCityProcessingException;
+use App\Fetcher\ApiRequestFetcherInterface;
+use App\Renderer\WeatherForecastRendererInterface;
 use App\Utils\RequestParams;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Validator\ConstraintViolationList;
