@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Application\Handler;
+namespace App\Application\Fetcher;
 
 use App\Exception\HttpResponseException;
 use App\Utils\RequestParams;
@@ -14,24 +14,21 @@ use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
-class MusementCityApiHandler implements ApiRequestHandlerInterface
+class MusementCityApiFetcher implements ApiRequestFetcherInterface
 {
-    private const API_CITIES_ENDPOINT = '/cities.json';
+    private const API_CITIES_ENDPOINT = '/api/v3/cities';
 
-    private HttpClientInterface $httpClient;
+    private HttpClientInterface $musementCityClient;
     private SerializerInterface $serializer;
-    private string $endpoint;
 
     /**
-     * @param HttpClientInterface $httpClient
+     * @param HttpClientInterface $musementCityClient
      * @param SerializerInterface $serializer
-     * @param string $url
      */
-    public function __construct(HttpClientInterface $httpClient, SerializerInterface $serializer, string $url)
+    public function __construct(HttpClientInterface $musementCityClient, SerializerInterface $serializer)
     {
-        $this->httpClient = $httpClient;
+        $this->musementCityClient = $musementCityClient;
         $this->serializer = $serializer;
-        $this->endpoint = rtrim($url, '/').self::API_CITIES_ENDPOINT;
     }
 
     /**
@@ -47,9 +44,9 @@ class MusementCityApiHandler implements ApiRequestHandlerInterface
      */
     public function fetch(RequestParams $requestParams = null)
     {
-        $response = $this->httpClient->request(
+        $response = $this->musementCityClient->request(
             'GET',
-            $this->endpoint,
+            self::API_CITIES_ENDPOINT,
             $requestParams !== null ? $requestParams->toArray() : []
         );
 

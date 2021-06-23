@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Application\Handler;
+namespace App\Tests\Application\Fetcher;
 
 use App\Application\DTO\MusementCity;
-use App\Application\Handler\MusementCityApiHandler;
+use App\Application\Fetcher\MusementCityApiFetcher;
 use App\Factory\JsonArraySerializerFactory;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -14,7 +14,7 @@ use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Contracts\HttpClient\ResponseInterface;
 
-class MusementCityApiHandlerTest extends TestCase
+class MusementCityApiFetcherTest extends TestCase
 {
     /** @var HttpClientInterface&MockObject */
     private HttpClientInterface $httpClient;
@@ -36,13 +36,9 @@ class MusementCityApiHandlerTest extends TestCase
         $this->httpClient->method('request')
             ->willReturn($this->response);
 
-        $apiHandler = new MusementCityApiHandler(
-            $this->httpClient,
-            $this->createMock(SerializerInterface::class),
-            ''
-        );
+        $apiFetcher = new MusementCityApiFetcher($this->httpClient, $this->createMock(SerializerInterface::class));
 
-        $response = $apiHandler->fetch();
+        $response = $apiFetcher->fetch();
 
         self::assertNull($response);
     }
@@ -62,13 +58,9 @@ class MusementCityApiHandlerTest extends TestCase
         $this->httpClient->method('request')
             ->willReturn($this->response);
 
-        $apiHandler = new MusementCityApiHandler(
-            $this->httpClient,
-            $this->createMock(SerializerInterface::class),
-            ''
-        );
+        $apiFetcher = new MusementCityApiFetcher($this->httpClient, $this->createMock(SerializerInterface::class));
 
-        $apiHandler->fetch();
+        $apiFetcher->fetch();
     }
 
     /**
@@ -86,13 +78,9 @@ class MusementCityApiHandlerTest extends TestCase
         $this->httpClient->method('request')
             ->willReturn($this->response);
 
-        $apiHandler = new MusementCityApiHandler(
-            $this->httpClient,
-            JsonArraySerializerFactory::build(),
-            ''
-        );
+        $apiFetcher = new MusementCityApiFetcher($this->httpClient, JsonArraySerializerFactory::build());
 
-        $response = $apiHandler->fetch();
+        $response = $apiFetcher->fetch();
 
         self::assertNotEmpty($response);
         self::assertEquals($musementCityMock, $response[0]);

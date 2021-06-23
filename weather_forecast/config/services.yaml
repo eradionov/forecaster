@@ -34,22 +34,22 @@ services:
     App\Application\Serializer\MusementCityWeatherForecastDaySerializer:
         factory: ['@App\Application\Factory\MusementCityForecastSerializerFactory', 'build']
 
-    App\Application\Handler\MusementCityApiHandler:
-        class: App\Application\Handler\MusementCityApiHandler
+    App\Application\Fetcher\MusementCityApiFetcher:
+        class: App\Application\Fetcher\MusementCityApiFetcher
         arguments:
             $serializer: '@App\Application\Serializer\MusementCitySerializer'
-            $url: '%api.musement.url%'
 
-    App\Application\Handler\MusementCityForecastApiHandler:
-        class: App\Application\Handler\MusementCityForecastApiHandler
+    App\Application\Fetcher\MusementCityForecastApiFetcher:
+        class: App\Application\Fetcher\MusementCityForecastApiFetcher
         arguments:
             $serializer: '@App\Application\Serializer\MusementCityWeatherForecastDaySerializer'
-            $url: '%api.weatherapi.url%'
 
     App\Application\WeatherForecastDetector:
         arguments:
-            $key: '%api.weatherapi.key%'
             $notifier: '@logger'
+
+    App\Application\Fetcher\ApiRequestFetcherInterface $musementCityApiFetcher: '@App\Application\Fetcher\MusementCityApiFetcher'
+    App\Application\Fetcher\ApiRequestFetcherInterface $musementCityForecastApiFetcher: '@App\Application\Fetcher\MusementCityForecastApiFetcher'
 
     App\Application\Renderer\ConsoleWeatherForecastRenderer:
         class: App\Application\Renderer\ConsoleWeatherForecastRenderer

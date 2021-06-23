@@ -7,8 +7,8 @@ namespace App\Application;
 use App\Application\DTO\CityWeatherForecast;
 use App\Application\DTO\MusementCity;
 use App\Application\Exception\MusementCityProcessingException;
+use App\Application\Fetcher\ApiRequestFetcherInterface;
 use App\Application\Renderer\WeatherForecastRendererInterface;
-use App\Application\Repository\ApiHandlerRepositoryInterface;
 use App\Exception\HttpResponseException;
 use App\Utils\RequestParams;
 use Psr\Log\LoggerInterface;
@@ -21,29 +21,29 @@ use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
 final class WeatherForecastDetector
 {
-    private ApiHandlerRepositoryInterface $musementApiRepository;
+    private ApiRequestFetcherInterface $musementCityApiFetcher;
+    private ApiRequestFetcherInterface $musementCityForecastApiFetcher;
     private ValidatorInterface $validator;
     private LoggerInterface $notifier;
     private WeatherForecastRendererInterface $renderer;
-    private string $key;
 
     /**
-     * @param ApiHandlerRepositoryInterface $musementApiRepository
+     * @param ApiRequestFetcherInterface $musementCityApiFetcher
+     * @param ApiRequestFetcherInterface $musementCityForecastApiFetcher
      * @param ValidatorInterface $validator
      * @param LoggerInterface $notifier
      * @param WeatherForecastRendererInterface $renderer
-     * @param string $key
      */
     public function __construct(
-        ApiHandlerRepositoryInterface $musementApiRepository,
+        ApiRequestFetcherInterface $musementCityApiFetcher,
+        ApiRequestFetcherInterface $musementCityForecastApiFetcher,
         ValidatorInterface $validator,
         LoggerInterface $notifier,
-        WeatherForecastRendererInterface $renderer,
-        string $key
+        WeatherForecastRendererInterface $renderer
     ) {
-        $this->musementApiRepository = $musementApiRepository;
+        $this->musementCityApiFetcher = $musementCityApiFetcher;
+        $this->musementCityForecastApiFetcher = $musementCityForecastApiFetcher;
         $this->validator = $validator;
-        $this->key = $key;
         $this->notifier = $notifier;
         $this->renderer = $renderer;
     }
@@ -65,7 +65,7 @@ final class WeatherForecastDetector
             throw new \InvalidArgumentException('Number of days to forecast weather should be positive.');
         }
 
-        $cities = $this->musementApiRepository->getMusementCityApiHandler()->fetch();
+        $cities = $this->musementCityApiFetcher->fetch();
         $hasErrors = false;
 
         if (count($cities) === 0) {
@@ -116,13 +116,10 @@ final class WeatherForecastDetector
      */
     private function getCityForecast(MusementCity $city, int $days): ?CityWeatherForecast
     {
-        $cityWeatherForecast = $this->musementApiRepository->getMusementCityForecaseApiHandler()->fetch(
+        $cityWeatherForecast = $this->musementCityForecastApiFetcher->fetch(
             RequestParams::create([
-                'days' => $days,
-                'q' => sprintf('%f,%f', $city->getLatitude(), $city->getLongitude()),
-            ],
-                [
-                    'key' => $this->key,
+                    'days' => $days,
+                    'q' => sprintf('%f,%f', $city->getLatitude(), $city->getLongitude()),
                 ]
             )
         );

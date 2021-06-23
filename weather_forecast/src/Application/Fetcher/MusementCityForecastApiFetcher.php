@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Application\Handler;
+namespace App\Application\Fetcher;
 
 use App\Application\DTO\CityWeatherForecast;
 use App\Exception\HttpResponseException;
@@ -15,24 +15,21 @@ use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
-class MusementCityForecastApiHandler implements ApiRequestHandlerInterface
+class MusementCityForecastApiFetcher implements ApiRequestFetcherInterface
 {
-    private const API_CITY_FORECAST_ENDPOINT = '/forecast.json';
+    private const API_CITY_FORECAST_ENDPOINT = '/v1/forecast.json';
 
-    private HttpClientInterface $httpClient;
+    private HttpClientInterface $cityForecastClient;
     private SerializerInterface $serializer;
-    private string $endpoint;
 
     /**
-     * @param HttpClientInterface $httpClient
+     * @param HttpClientInterface $cityForecastClient
      * @param SerializerInterface $serializer
-     * @param string $url
      */
-    public function __construct(HttpClientInterface $httpClient, SerializerInterface $serializer, string $url)
+    public function __construct(HttpClientInterface $cityForecastClient, SerializerInterface $serializer)
     {
-        $this->httpClient = $httpClient;
+        $this->cityForecastClient = $cityForecastClient;
         $this->serializer = $serializer;
-        $this->endpoint = rtrim($url, '/').self::API_CITY_FORECAST_ENDPOINT;
     }
 
     /**
@@ -48,9 +45,9 @@ class MusementCityForecastApiHandler implements ApiRequestHandlerInterface
      */
     public function fetch(RequestParams $requestParams = null)
     {
-        $response = $this->httpClient->request(
+        $response = $this->cityForecastClient->request(
             'GET',
-            $this->endpoint,
+            self::API_CITY_FORECAST_ENDPOINT,
             $requestParams !== null ? $requestParams->toArray() : []
         );
 

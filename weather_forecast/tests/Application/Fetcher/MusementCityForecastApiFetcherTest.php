@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Application\Handler;
+namespace App\Tests\Application\Fetcher;
 
 use App\Application\DTO\CityWeatherForecast;
 use App\Application\Factory\MusementCityForecastSerializerFactory;
-use App\Application\Handler\MusementCityForecastApiHandler;
+use App\Application\Fetcher\MusementCityForecastApiFetcher;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Response;
@@ -14,7 +14,7 @@ use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Contracts\HttpClient\ResponseInterface;
 
-class MusementCityForecastApiHandlerTest extends TestCase
+class MusementCityForecastApiFetcherTest extends TestCase
 {
     /** @var HttpClientInterface&MockObject */
     private HttpClientInterface $httpClient;
@@ -52,13 +52,8 @@ class MusementCityForecastApiHandlerTest extends TestCase
         $this->httpClient->method('request')
             ->willReturn($this->response);
 
-        $apiHandler = new MusementCityForecastApiHandler(
-            $this->httpClient,
-            $this->serializer,
-            ''
-        );
-
-        $response = $apiHandler->fetch();
+        $apiFetcher = new MusementCityForecastApiFetcher($this->httpClient, $this->serializer);
+        $apiFetcher->fetch();
     }
 
     /**
@@ -75,13 +70,8 @@ class MusementCityForecastApiHandlerTest extends TestCase
         $this->httpClient->method('request')
             ->willReturn($this->response);
 
-        $apiHandler = new MusementCityForecastApiHandler(
-            $this->httpClient,
-            $this->serializer,
-            ''
-        );
-
-        $response = $apiHandler->fetch();
+        $apiFetcher = new MusementCityForecastApiFetcher($this->httpClient, $this->serializer);
+        $response = $apiFetcher->fetch();
 
         self::assertEquals($weatherForecast, $response);
     }
