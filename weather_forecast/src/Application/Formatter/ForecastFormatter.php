@@ -18,7 +18,7 @@ final class ForecastFormatter
         return sprintf(
             'Processed city %s | %s',
             $forecast->getCity(),
-            implode(' - ', $forecast->getCityForecastDays())
+            implode(' - ', $forecast->getForecasts())
         );
     }
 }

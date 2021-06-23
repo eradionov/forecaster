@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Application\Formatter;
+namespace App\Tests\Formatter;
 
 use App\Application\DTO\CityWeatherForecast;
 use App\Application\Formatter\ForecastFormatter;
@@ -13,7 +13,7 @@ final class ForecastFormatterTest extends TestCase
     public function testFormatterWithTwoDaysResponse(): void
     {
         $cityWeatherForecast = new CityWeatherForecast();
-        $cityWeatherForecast->setCityForecastDays(['Sunny', 'Cloudy']);
+        $cityWeatherForecast->setForecasts(['Sunny', 'Cloudy']);
         $cityWeatherForecast->setCity('New-York');
 
         self::assertSame(
@@ -27,7 +27,7 @@ final class ForecastFormatterTest extends TestCase
     public function testFormatterWithThreeDaysResponse(): void
     {
         $cityWeatherForecast = new CityWeatherForecast();
-        $cityWeatherForecast->setCityForecastDays(['Sunny', 'Cloudy', 'Snowy']);
+        $cityWeatherForecast->setForecasts(['Sunny', 'Cloudy', 'Snowy']);
         $cityWeatherForecast->setCity('New-York');
 
         self::assertSame(
@@ -41,7 +41,7 @@ final class ForecastFormatterTest extends TestCase
     public function testFormatterWithEmptyDataResponse(): void
     {
         $cityWeatherForecast = new CityWeatherForecast();
-        $cityWeatherForecast->setCityForecastDays([]);
+        $cityWeatherForecast->setForecasts([]);
         $cityWeatherForecast->setCity('');
 
         self::assertSame(

@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Application\Fetcher;
+namespace App\Tests\Fetcher;
 
 use App\Application\DTO\MusementCity;
 use App\Application\Fetcher\MusementCityApiFetcher;
-use App\Factory\JsonArraySerializerFactory;
+use App\Factory\MusementApiSerializerFactory;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Response;
@@ -78,7 +78,7 @@ class MusementCityApiFetcherTest extends TestCase
         $this->httpClient->method('request')
             ->willReturn($this->response);
 
-        $apiFetcher = new MusementCityApiFetcher($this->httpClient, JsonArraySerializerFactory::build());
+        $apiFetcher = new MusementCityApiFetcher($this->httpClient, MusementApiSerializerFactory::build());
 
         $response = $apiFetcher->fetch();
 

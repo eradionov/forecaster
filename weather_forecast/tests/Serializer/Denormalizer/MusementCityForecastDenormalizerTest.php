@@ -2,11 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Application\Serializer\Normalizer;
+namespace App\Tests\Serializer\Denormalizer;
 
 use App\Application\DTO\CityWeatherForecast;
-use App\Application\Serializer\Normalizer\MusementCityForecastDenormalizer;
+use App\Application\Serializer\Denormalizer\MusementCityForecastDenormalizer;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 
 final class MusementCityForecastDenormalizerTest extends TestCase
 {
@@ -14,28 +15,31 @@ final class MusementCityForecastDenormalizerTest extends TestCase
      * @dataProvider getResponseWithForecasts
      *
      * @param array<int, array> $cityForecasts
+     * @param string $city
+     * @param array<int, string> $forecastsResponseSample
      */
-    public function testWithForecasts(array $cityForecasts): void
+    public function testWithForecasts(array $cityForecasts, string $city, array $forecastsResponseSample): void
     {
         $type = CityWeatherForecast::class;
-        $response = (new MusementCityForecastDenormalizer())->denormalize($cityForecasts, $type);
+        $response = (new MusementCityForecastDenormalizer(new ObjectNormalizer()))->denormalize($cityForecasts, $type);
 
-        self::assertEquals(['Sunny', 'Cloudy', 'Windy'], $response->getCityForecastDays());
-        self::assertEquals('New-York', $response->getCity());
+        self::assertEquals($forecastsResponseSample, $response->getForecasts());
+        self::assertEquals($city, $response->getCity());
     }
 
     /**
      * @dataProvider getResponseWithoutForecasts
      *
      * @param array<int, array> $cityForecasts
+     * @param string $city
      */
-    public function testWithoutForecasts(array $cityForecasts): void
+    public function testWithoutForecasts(array $cityForecasts, string $city): void
     {
         $type = CityWeatherForecast::class;
-        $response = (new MusementCityForecastDenormalizer())->denormalize($cityForecasts, $type);
+        $response = (new MusementCityForecastDenormalizer(new ObjectNormalizer()))->denormalize($cityForecasts, $type);
 
-        self::assertEquals([], $response->getCityForecastDays());
-        self::assertEquals('New-York', $response->getCity());
+        self::assertEquals([], $response->getForecasts());
+        self::assertEquals($city, $response->getCity());
     }
 
     /**
@@ -75,6 +79,8 @@ final class MusementCityForecastDenormalizerTest extends TestCase
                         ],
                     ],
                 ],
+                'New-York',
+                ['Sunny', 'Cloudy', 'Windy'],
             ],
         ];
     }
@@ -91,6 +97,7 @@ final class MusementCityForecastDenormalizerTest extends TestCase
                         'name' => 'New-York',
                     ],
                 ],
+                'New-York',
             ],
         ];
     }

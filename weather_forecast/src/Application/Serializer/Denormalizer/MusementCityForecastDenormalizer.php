@@ -2,33 +2,43 @@
 
 declare(strict_types=1);
 
-namespace App\Application\Serializer\Normalizer;
+namespace App\Application\Serializer\Denormalizer;
 
 use App\Application\DTO\CityWeatherForecast;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
+use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 
 final class MusementCityForecastDenormalizer implements DenormalizerInterface
 {
+    private ObjectNormalizer $normalizer;
+
+    /**
+     * ObjectNormalizer $normalizer
+     */
+    public function __construct(ObjectNormalizer $normalizer)
+    {
+        $this->normalizer = $normalizer;
+    }
+
     /**
      * {@inheritdoc}
      */
     public function denormalize($data, string $type, string $format = null, array $context = [])
     {
-        $cityForecastDays = [];
+        $cityForecastDays = [
+            'city' => $data['location']['name'] ?? '',
+            'forecasts' => [],
+        ];
 
         if (isset($data['forecast'], $data['forecast']['forecastday'])) {
             foreach ($data['forecast']['forecastday'] as $decodedResponse) {
                 if (isset($decodedResponse['day'], $decodedResponse['day']['condition'], $decodedResponse['day']['condition']['text'])) {
-                    $cityForecastDays[] = $decodedResponse['day']['condition']['text'];
+                    $cityForecastDays['forecasts'][] = $decodedResponse['day']['condition']['text'];
                 }
             }
         }
 
-        $cityForecast = new CityWeatherForecast();
-        $cityForecast->setCity($data['location']['name'] ?? '');
-        $cityForecast->setCityForecastDays($cityForecastDays);
-
-        return $cityForecast;
+        return $this->normalizer->denormalize($cityForecastDays, $type, $format, $context);
     }
 
     /**

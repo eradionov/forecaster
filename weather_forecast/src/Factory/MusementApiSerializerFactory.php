@@ -2,17 +2,16 @@
 
 declare(strict_types=1);
 
-namespace App\Application\Factory;
+namespace App\Factory;
 
-use App\Application\Serializer\Normalizer\MusementCityForecastDenormalizer;
-use App\Factory\FactoryInterface;
+use App\Application\Serializer\Denormalizer\MusementCityForecastDenormalizer;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\ArrayDenormalizer;
-use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
+use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Serializer\SerializerInterface;
 
-final class MusementCityForecastSerializerFactory implements FactoryInterface
+final class MusementApiSerializerFactory implements FactoryInterface
 {
     /**
      * {@inheritdoc}
@@ -21,8 +20,8 @@ final class MusementCityForecastSerializerFactory implements FactoryInterface
     {
         return new Serializer([
             new ArrayDenormalizer(),
-            new MusementCityForecastDenormalizer(),
-            new DateTimeNormalizer(),
+            new MusementCityForecastDenormalizer(new ObjectNormalizer()),
+            new ObjectNormalizer(),
         ], [new JsonEncoder()]);
     }
 }

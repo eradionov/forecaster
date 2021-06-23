@@ -29,7 +29,7 @@ final class CityWeatherForecast
     {
         $cityWeatherForecast = new self();
         $cityWeatherForecast->setCity($data['city']);
-        $cityWeatherForecast->setCityForecastDays($data['forecasts']);
+        $cityWeatherForecast->setForecasts($data['forecasts']);
 
         return $cityWeatherForecast;
     }
@@ -53,7 +53,7 @@ final class CityWeatherForecast
     /**
      * @return array<int, string>
      */
-    public function getCityForecastDays(): array
+    public function getForecasts(): array
     {
         return $this->forecasts;
     }
@@ -61,7 +61,7 @@ final class CityWeatherForecast
     /**
      * @param array<int, string> $forecasts
      */
-    public function setCityForecastDays(array $forecasts): void
+    public function setForecasts(array $forecasts): void
     {
         $this->forecasts = $forecasts;
     }
