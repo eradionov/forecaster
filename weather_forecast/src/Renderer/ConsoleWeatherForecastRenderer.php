@@ -5,32 +5,34 @@ declare(strict_types=1);
 namespace App\Renderer;
 
 use App\DTO\CityWeatherForecast;
+use App\DTO\MusementCity;
 use App\Exception\InvalidFormatException;
 use App\Formatter\ArrayToStringFormatterInterface;
+use App\Formatter\MusementCityWeatherFormatterInterface;
 use Psr\Log\LoggerInterface;
 
 final class ConsoleWeatherForecastRenderer implements WeatherForecastRendererInterface
 {
     private LoggerInterface $consoleNotifier;
-    private ArrayToStringFormatterInterface $formatter;
+    private MusementCityWeatherFormatterInterface $formatter;
 
     /**
      * @param LoggerInterface $consoleNotifier
-     * @param ArrayToStringFormatterInterface $formatter
+     * @param MusementCityWeatherFormatterInterface $formatter
      */
-    public function __construct(LoggerInterface $consoleNotifier, ArrayToStringFormatterInterface $formatter)
+    public function __construct(LoggerInterface $consoleNotifier, MusementCityWeatherFormatterInterface $formatter)
     {
         $this->consoleNotifier = $consoleNotifier;
         $this->formatter = $formatter;
     }
 
     /**
-     * @param CityWeatherForecast $weatherForecast
+     * @param MusementCity $city
      *
      * @throws InvalidFormatException if data, passed into formatter has incorrect format.
      */
-    public function render(CityWeatherForecast $weatherForecast): void
+    public function render(MusementCity $city): void
     {
-        $this->consoleNotifier->notice($this->formatter->format($weatherForecast->toArray()));
+        $this->consoleNotifier->notice($this->formatter->format($city));
     }
 }

@@ -9,11 +9,6 @@ use Symfony\Component\Validator\Constraints as Assert;
 final class CityWeatherForecast
 {
     /**
-     * @Assert\NotBlank(message="City name is required.")
-     */
-    private string $city;
-
-    /**
      * @var array<int, string>
      *
      * @Assert\NotBlank(message="City forecasts are required.")
@@ -28,37 +23,9 @@ final class CityWeatherForecast
     public static function fromArray(array $data): self
     {
         $cityWeatherForecast = new self();
-        $cityWeatherForecast->setCity($data['city']);
         $cityWeatherForecast->setForecasts($data['forecasts']);
 
         return $cityWeatherForecast;
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
-    public function toArray(): array
-    {
-        return [
-            'city' => $this->city ?? '',
-            'forecasts' => $this->forecasts ?? [],
-        ];
-    }
-
-    /**
-     * @return string
-     */
-    public function getCity(): string
-    {
-        return $this->city;
-    }
-
-    /**
-     * @param string $city
-     */
-    public function setCity(string $city): void
-    {
-        $this->city = $city;
     }
 
     /**

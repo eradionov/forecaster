@@ -4,23 +4,20 @@ declare(strict_types=1);
 
 namespace App\Formatter;
 
+use App\DTO\MusementCity;
 use App\Exception\InvalidFormatException;
 
-final class ForecastFormatter implements ArrayToStringFormatterInterface
+final class ForecastFormatter implements MusementCityWeatherFormatterInterface
 {
     /**
      * {@inheritdoc}
      */
-    public function format(array $data): string
+    public function format(MusementCity $city): string
     {
-        if (!\array_key_exists('city', $data) || !\array_key_exists('forecasts', $data)) {
-            throw new InvalidFormatException('Invalid format passed.\'city, forecasts\' should present.');
-        }
-
         return sprintf(
             'Processed city %s | %s',
-            $data['city'],
-            implode(' - ', $data['forecasts'])
+            $city->getName(),
+            implode(' - ', $city->getForecast()->getForecasts() ?? [])
         );
     }
 }

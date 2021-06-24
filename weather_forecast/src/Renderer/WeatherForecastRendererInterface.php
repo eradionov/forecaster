@@ -3,11 +3,12 @@
 namespace App\Renderer;
 
 use App\DTO\CityWeatherForecast;
+use App\DTO\MusementCity;
 
 interface WeatherForecastRendererInterface
 {
     /**
-     * @param CityWeatherForecast $weatherForecast
+     * @param MusementCity $city
      */
-    public function render(CityWeatherForecast $weatherForecast): void;
+    public function render(MusementCity $city): void;
 }

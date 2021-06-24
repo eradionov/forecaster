@@ -5,12 +5,13 @@ declare(strict_types=1);
 namespace App\ApiClient;
 
 use App\ApiClient\Interfaces\MusementApiInterface;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class MusementApiClient extends BaseApiClient implements MusementApiInterface
 {
-    private const API_ENDPOINT = '/api/v3/cities';
+    private const CITIES_ENDPOINT = '/api/v3/cities';
 
     /**
      * @param SerializerInterface $serializer
@@ -27,8 +28,8 @@ class MusementApiClient extends BaseApiClient implements MusementApiInterface
     public function getAllMusementCities(): array
     {
         return (array) $this->request(
-            self::REQUEST_GET,
-            self::API_ENDPOINT,
+            Request::METHOD_GET,
+            self::CITIES_ENDPOINT,
             'App\DTO\MusementCity[]'
         );
     }

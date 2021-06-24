@@ -15,15 +15,7 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 abstract class BaseApiClient
 {
-    protected const REQUEST_GET = 'GET';
-    protected const REQUEST_POST = 'POST';
-
     protected const RESPONSE_FORMAT_JSON = 'json';
-
-    private const AVAILABLE_REQUEST_METHODS = [
-        self::REQUEST_GET,
-        self::REQUEST_POST,
-    ];
 
     private const AVAILABLE_RESPONSE_FORMATS = [
         self::RESPONSE_FORMAT_JSON,
@@ -64,10 +56,6 @@ abstract class BaseApiClient
         array $params = [],
         string $responseFormat = self::RESPONSE_FORMAT_JSON
     ) {
-        if (!\in_array($requestMethod, self::AVAILABLE_REQUEST_METHODS, true)) {
-            throw new \InvalidArgumentException(sprintf('Request method \'%s\' in not available. Please use one of \'%s\'', $requestMethod, implode(', ', self::AVAILABLE_REQUEST_METHODS)));
-        }
-
         if (!\in_array($responseFormat, self::AVAILABLE_RESPONSE_FORMATS, true)) {
             throw new \InvalidArgumentException(sprintf('Response format \'%s\' in not available. Please use one of \'%s\'', $requestMethod, implode(', ', self::AVAILABLE_RESPONSE_FORMATS)));
         }
