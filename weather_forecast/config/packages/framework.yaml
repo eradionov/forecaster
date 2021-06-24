@@ -13,12 +13,12 @@ framework:
         storage_factory_id: session.storage.factory.native
     http_client:
         scoped_clients:
-            musement.city.client:
+            musement.api.client:
                 base_uri: 'https://api.musement.com'
                 headers:
                     Accept: 'application/json'
 
-            city.forecast.client:
+            weather.api.client:
                 base_uri: 'http://api.weatherapi.com'
                 headers:
                     Accept: 'application/json'

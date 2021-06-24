@@ -26,3 +26,11 @@ services:
             - { name: 'console.command', command: 'app:weather_forecast' }
 
     Psr\Log\LoggerInterface $consoleNotifier: '@logger'
+
+    App\ApiClient\MusementApiClient:
+        arguments:
+            $httpClient: '@musement.api.client'
+
+    App\ApiClient\WeatherApiClient:
+        arguments:
+            $httpClient: '@weather.api.client'
