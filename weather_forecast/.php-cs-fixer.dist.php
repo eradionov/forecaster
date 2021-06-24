@@ -20,7 +20,7 @@ return (new PhpCsFixer\Config())
         'phpdoc_summary' => false,
         'phpdoc_to_comment' => false,
         'phpdoc_align' => ['align' => 'left'],
-        'yoda_style' => false,
+        'yoda_style' => true,
     ])
     ->setFinder($finder)
     ;

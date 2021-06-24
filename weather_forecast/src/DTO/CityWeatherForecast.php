@@ -35,6 +35,17 @@ final class CityWeatherForecast
     }
 
     /**
+     * @return array<string, mixed>
+     */
+    public function toArray(): array
+    {
+        return [
+            'city' => $this->city ?? '',
+            'forecasts' => $this->forecasts ?? [],
+        ];
+    }
+
+    /**
      * @return string
      */
     public function getCity(): string
