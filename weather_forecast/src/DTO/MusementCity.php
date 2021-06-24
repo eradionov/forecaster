@@ -24,7 +24,14 @@ final class MusementCity
     private float $longitude;
 
     /**
-     * @param array{name: string, latitude: float, longitude: float} $data
+     * @var CityWeatherForecast
+     *
+     * @Assert\Type(type="App\DTO\CityWeatherForecast", message="Forecast is required.")
+     */
+    private CityWeatherForecast $forecast;
+
+    /**
+     * @param array{name: string, latitude: float, longitude: float, forecast: ?CityWeatherForecast} $data
      *
      * @return MusementCity
      */
@@ -34,6 +41,10 @@ final class MusementCity
         $musementCity->setName($data['name']);
         $musementCity->setLatitude($data['latitude']);
         $musementCity->setLongitude($data['longitude']);
+
+        if (isset($data['forecast'])) {
+            $musementCity->setForecast($data['forecast']);
+        }
 
         return $musementCity;
     }
@@ -76,6 +87,22 @@ final class MusementCity
     public function getLatitude(): float
     {
         return $this->latitude;
+    }
+
+    /**
+     * @return CityWeatherForecast
+     */
+    public function getForecast(): CityWeatherForecast
+    {
+        return $this->forecast;
+    }
+
+    /**
+     * @param CityWeatherForecast $forecast
+     */
+    public function setForecast(CityWeatherForecast $forecast): void
+    {
+        $this->forecast = $forecast;
     }
 
     /**

@@ -6,21 +6,11 @@ namespace App\ApiClient;
 
 use App\ApiClient\Interfaces\WeatherApiInterface;
 use App\DTO\CityWeatherForecast;
-use Symfony\Component\Serializer\SerializerInterface;
-use Symfony\Contracts\HttpClient\HttpClientInterface;
+use Symfony\Component\HttpFoundation\Request;
 
 class WeatherApiClient extends BaseApiClient implements WeatherApiInterface
 {
-    private const API_ENDPOINT = '/v1/forecast.json';
-
-    /**
-     * @param SerializerInterface $serializer
-     * @param HttpClientInterface $cityForecastClient
-     */
-    public function __construct(SerializerInterface $serializer, HttpClientInterface $cityForecastClient)
-    {
-        parent::__construct($serializer, $cityForecastClient);
-    }
+    private const FORECAST_ENDPOINT = '/v1/forecast.json';
 
     /**
      * {@inheritdoc}
@@ -42,8 +32,8 @@ class WeatherApiClient extends BaseApiClient implements WeatherApiInterface
         }
 
         return $this->request(
-            self::REQUEST_GET,
-            self::API_ENDPOINT,
+            Request::METHOD_GET,
+            self::FORECAST_ENDPOINT,
             CityWeatherForecast::class,
             [
                 'query' => $query,

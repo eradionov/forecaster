@@ -6,6 +6,7 @@ namespace App\Tests\ApiClient;
 
 use App\ApiClient\WeatherApiClient;
 use App\DTO\CityWeatherForecast;
+use App\DTO\CityWeatherForecastDay;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Response;
@@ -57,7 +58,7 @@ class WeatherApiClientTest extends TestCase
         $apiFetcher = new WeatherApiClient($this->serializer, $this->httpClient);
         $response = $apiFetcher->getCityWeatherForecast('12.12,23.23');
 
-        self::assertEquals($weatherForecast, $response);
+        self::assertEquals($weatherForecast->getForecastsDay(), $response->getForecastsDay());
     }
 
     public function testHttpExceptionResponse(): void
@@ -110,10 +111,14 @@ class WeatherApiClientTest extends TestCase
                         ],
                     ],
                 ],
-                CityWeatherForecast::fromArray([
-                    'city' => 'Amsterdam',
-                    'forecasts' => ['Sunny', 'Cloudy'],
-                ]),
+                CityWeatherForecast::fromArray(
+                    [
+                        'forecastsDay' => [
+                            CityWeatherForecastDay::create('Sunny'),
+                            CityWeatherForecastDay::create('Cloudy'),
+                        ],
+                    ]
+                ),
             ],
         ];
     }

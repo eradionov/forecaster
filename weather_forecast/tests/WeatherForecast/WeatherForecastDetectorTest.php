@@ -9,6 +9,7 @@ use App\ApiClient\Interfaces\WeatherApiInterface;
 use App\ApiClient\MusementApiClient;
 use App\ApiClient\WeatherApiClient;
 use App\DTO\CityWeatherForecast;
+use App\DTO\CityWeatherForecastDay;
 use App\DTO\MusementCity;
 use App\Renderer\WeatherForecastRendererInterface;
 use App\WeatherForecast\WeatherForecastDetector;
@@ -66,39 +67,18 @@ final class WeatherForecastDetectorTest extends TestCase
     }
 
     /**
-     * @dataProvider getMusementApiResponse
+     * @dataProvider getMusementApiResponseWithoutForecast
      *
-     * @param array{name: string, latitude: float, longitude: float} $responseData
+     * @param array{name: string, latitude: float, longitude: float, forecast: ?CityWeatherForecast} $responseData
+     * @param CityWeatherForecast $forecast
      */
-    public function testValidMusementCityWithoutForecastAndDayArgument(array $responseData): void
+    public function testValidMusementCityWithoutForecast(array $responseData, CityWeatherForecast $forecast): void
     {
         $this->expectExceptionMessage(self::DEFAULT_ERROR_MESSAGE);
 
-        $this->musementApiClient->method('getAllMusementCities')->willReturn([MusementCity::fromArray($responseData)]);
-        $this->validator->method('validate')->willReturn([]);
-
-        $weatherForecastDetector = new WeatherForecastDetector(
-            $this->musementApiClient,
-            $this->cityWeatherApiClient,
-            $this->validator,
-            $this->notifier,
-            $this->renderer
-        );
-
-        $weatherForecastDetector->detect(0);
-    }
-
-    /**
-     * @dataProvider getMusementApiResponse
-     *
-     * @param array{name: string, latitude: float, longitude: float} $responseData
-     */
-    public function testValidMusementCityWithoutForecast(array $responseData): void
-    {
-        $this->expectExceptionMessage(self::DEFAULT_ERROR_MESSAGE);
-
-        $this->musementApiClient->method('getAllMusementCities')->willReturn([MusementCity::fromArray($responseData)]);
-        $this->validator->method('validate')->willReturn([]);
+        $musementCity = MusementCity::fromArray($responseData);
+        $this->musementApiClient->method('getAllMusementCities')->willReturn([$musementCity]);
+        $this->cityWeatherApiClient->method('getCityWeatherForecast')->willReturn($forecast);
 
         $weatherForecastDetector = new WeatherForecastDetector(
             $this->musementApiClient,
@@ -115,15 +95,15 @@ final class WeatherForecastDetectorTest extends TestCase
      * @doesNotPerformAssertions
      * @dataProvider getMusementApiResponse
      *
-     * @param array{name: string, latitude: float, longitude: float} $responseData
-     * @param array{city: string, forecasts: array} $forecasts
+     * @param array{name: string, latitude: float, longitude: float, forecast: ?CityWeatherForecast} $responseData
+     * @param CityWeatherForecast $forecasts
      */
-    public function testValidMusementCityWithForecasts(array $responseData, array $forecasts): void
+    public function testValidMusementCityWithForecasts(array $responseData, CityWeatherForecast $forecasts): void
     {
         $this->musementApiClient->method('getAllMusementCities')->willReturn([MusementCity::fromArray($responseData)]);
         $this->validator->method('validate')->willReturn([]);
 
-        $this->cityWeatherApiClient->method('getCityWeatherForecast')->willReturn(CityWeatherForecast::fromArray($forecasts));
+        $this->cityWeatherApiClient->method('getCityWeatherForecast')->willReturn($forecasts);
 
         $weatherForecastDetector = new WeatherForecastDetector(
             $this->musementApiClient,
@@ -139,6 +119,27 @@ final class WeatherForecastDetectorTest extends TestCase
     /**
      * @return array<int, array>
      */
+    public function getMusementApiResponseWithoutForecast(): array
+    {
+        return [
+            [
+                [
+                    'name' => 'Amsterdam',
+                    'latitude' => 52.374,
+                    'longitude' => 4.9,
+                ],
+                CityWeatherForecast::fromArray(
+                    [
+                        'forecastsDay' => [],
+                    ]
+                ),
+            ],
+        ];
+    }
+
+    /**
+     * @return array<int, array>
+     */
     public function getMusementApiResponse(): array
     {
         return [
@@ -148,10 +149,14 @@ final class WeatherForecastDetectorTest extends TestCase
                     'latitude' => 52.374,
                     'longitude' => 4.9,
                 ],
-                [
-                    'city' => 'Amsterdam',
-                    'forecasts' => ['Sunny', 'Cloudy'],
-                ],
+                CityWeatherForecast::fromArray(
+                    [
+                        'forecastsDay' => [
+                            CityWeatherForecastDay::create('Sunny'),
+                            CityWeatherForecastDay::create('Cloudy'),
+                        ],
+                    ]
+                ),
             ],
         ];
     }

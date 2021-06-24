@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Serializer\Denormalizer;
 
 use App\DTO\CityWeatherForecast;
+use App\DTO\CityWeatherForecastDay;
 use App\Serializer\Denormalizer\MusementCityForecastDenormalizer;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
@@ -15,31 +16,28 @@ final class MusementCityForecastDenormalizerTest extends TestCase
      * @dataProvider getResponseWithForecasts
      *
      * @param array<int, array> $cityForecasts
-     * @param string $city
-     * @param array<int, string> $forecastsResponseSample
+     * @param CityWeatherForecast $forecastsResponseSample
      */
-    public function testWithForecasts(array $cityForecasts, string $city, array $forecastsResponseSample): void
+    public function testWithForecasts(array $cityForecasts, CityWeatherForecast $forecastsResponseSample): void
     {
         $type = CityWeatherForecast::class;
         $response = (new MusementCityForecastDenormalizer(new ObjectNormalizer()))->denormalize($cityForecasts, $type);
 
-        self::assertEquals($forecastsResponseSample, $response->getForecasts());
-        self::assertEquals($city, $response->getCity());
+        self::assertEquals($forecastsResponseSample->getForecastsDay(), $response->getForecastsDay());
     }
 
     /**
      * @dataProvider getResponseWithoutForecasts
      *
      * @param array<int, array> $cityForecasts
-     * @param string $city
+     * @param CityWeatherForecast $forecast
      */
-    public function testWithoutForecasts(array $cityForecasts, string $city): void
+    public function testWithoutForecasts(array $cityForecasts, CityWeatherForecast $forecast): void
     {
         $type = CityWeatherForecast::class;
         $response = (new MusementCityForecastDenormalizer(new ObjectNormalizer()))->denormalize($cityForecasts, $type);
 
-        self::assertEquals([], $response->getForecasts());
-        self::assertEquals($city, $response->getCity());
+        self::assertEquals([], $response->getForecastsDay());
     }
 
     /**
@@ -79,8 +77,15 @@ final class MusementCityForecastDenormalizerTest extends TestCase
                         ],
                     ],
                 ],
-                'New-York',
-                ['Sunny', 'Cloudy', 'Windy'],
+                CityWeatherForecast::fromArray(
+                    [
+                        'forecastsDay' => [
+                            CityWeatherForecastDay::create('Sunny'),
+                            CityWeatherForecastDay::create('Cloudy'),
+                            CityWeatherForecastDay::create('Windy'),
+                        ],
+                    ]
+                ),
             ],
         ];
     }
@@ -97,7 +102,11 @@ final class MusementCityForecastDenormalizerTest extends TestCase
                         'name' => 'New-York',
                     ],
                 ],
-                'New-York',
+                CityWeatherForecast::fromArray(
+                    [
+                        'forecastsDay' => [],
+                    ]
+                ),
             ],
         ];
     }
