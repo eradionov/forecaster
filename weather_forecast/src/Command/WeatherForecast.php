@@ -17,7 +17,6 @@ use Symfony\Contracts\HttpClient\Exception\ExceptionInterface;
 final class WeatherForecast extends Command
 {
     private const ARGUMENT_DAYS = 'days';
-    private const DEFAULT_DAYS = 2;
 
     private WeatherForecastDetector $weatherForecastDetector;
     private LoggerInterface $logger;
@@ -48,7 +47,7 @@ final class WeatherForecast extends Command
             null,
             InputArgument::OPTIONAL,
             'Number of days to generate forecast.',
-            (string) (self::DEFAULT_DAYS)
+            '2'
         );
     }
 
@@ -58,11 +57,15 @@ final class WeatherForecast extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         try {
-            if (\is_string($input->getOption(self::ARGUMENT_DAYS))) {
-                $days = (int) $input->getOption(self::ARGUMENT_DAYS);
+            $days = $input->getOption(self::ARGUMENT_DAYS);
+
+            if (!\is_string($days) || !is_numeric($days)) {
+                $output->writeln('<error>Number of days should be numeric value.</error>');
+
+                return self::FAILURE;
             }
 
-            $this->weatherForecastDetector->detect($days ?? self::DEFAULT_DAYS);
+            $this->weatherForecastDetector->detect((int) $days);
 
             return self::SUCCESS;
         } catch (HttpResponseException | ExceptionInterface | MusementCityProcessingException $exception) {

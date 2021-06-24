@@ -2,11 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Fetcher;
+namespace App\Tests\ApiClient;
 
+use App\ApiClient\WeatherApiClient;
 use App\DTO\CityWeatherForecast;
-use App\Factory\MusementApiSerializerFactory;
-use App\Fetcher\MusementCityForecastApiFetcher;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Response;
@@ -14,7 +13,7 @@ use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Contracts\HttpClient\ResponseInterface;
 
-class MusementCityForecastApiFetcherTest extends TestCase
+class WeatherApiClientTest extends TestCase
 {
     /** @var HttpClientInterface&MockObject */
     private HttpClientInterface $httpClient;
@@ -22,38 +21,22 @@ class MusementCityForecastApiFetcherTest extends TestCase
     /** @var ResponseInterface&MockObject */
     private ResponseInterface $response;
 
-    /** @var SerializerInterface */
+    /** @var SerializerInterface&MockObject */
     private SerializerInterface $serializer;
 
     protected function setUp(): void
     {
         $this->httpClient = $this->createMock(HttpClientInterface::class);
         $this->response = $this->createMock(ResponseInterface::class);
-        $this->serializer = MusementApiSerializerFactory::build();
+        $this->serializer = $this->createMock(SerializerInterface::class);
     }
 
-    /**
-     * @dataProvider getMusementCityForecastApiResponse
-     *
-     * @param array<int, array> $responseData
-     */
-    public function testHttpExceptionResponse(array $responseData): void
+    public function testInvalidArgumentResponse(): void
     {
-        $this->expectExceptionMessage(
-            sprintf(
-                'Weather forecast request finished with error HTTP code: %d',
-                Response::HTTP_INTERNAL_SERVER_ERROR
-            )
-        );
+        $this->expectExceptionMessage('Latitude and longitude should be passed.');
 
-        $this->response->method('getStatusCode')->willReturn(Response::HTTP_INTERNAL_SERVER_ERROR);
-        $this->response->method('getContent')->willReturn(json_encode($responseData));
-
-        $this->httpClient->method('request')
-            ->willReturn($this->response);
-
-        $apiFetcher = new MusementCityForecastApiFetcher($this->httpClient, $this->serializer);
-        $apiFetcher->fetch();
+        $weatherApiClient = new WeatherApiClient($this->serializer, $this->httpClient);
+        $weatherApiClient->getCityWeatherForecast('');
     }
 
     /**
@@ -66,14 +49,35 @@ class MusementCityForecastApiFetcherTest extends TestCase
     {
         $this->response->method('getStatusCode')->willReturn(Response::HTTP_OK);
         $this->response->method('getContent')->willReturn(json_encode($responseData));
+        $this->serializer->method('deserialize')->willReturn($weatherForecast);
 
         $this->httpClient->method('request')
             ->willReturn($this->response);
 
-        $apiFetcher = new MusementCityForecastApiFetcher($this->httpClient, $this->serializer);
-        $response = $apiFetcher->fetch();
+        $apiFetcher = new WeatherApiClient($this->serializer, $this->httpClient);
+        $response = $apiFetcher->getCityWeatherForecast('12.12,23.23');
 
         self::assertEquals($weatherForecast, $response);
+    }
+
+    public function testHttpExceptionResponse(): void
+    {
+        $this->expectExceptionMessage(
+            sprintf(
+                'Request finished with error HTTP code: %d',
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            )
+        );
+
+        $this->response->method('getStatusCode')->willReturn(Response::HTTP_INTERNAL_SERVER_ERROR);
+        $this->response->method('getContent')->willReturn('');
+
+        $this->httpClient->method('request')
+            ->willReturn($this->response);
+
+        $apiFetcher = new WeatherApiClient($this->serializer, $this->httpClient);
+
+        $apiFetcher->getCityWeatherForecast('12.12,23.12', 2);
     }
 
     /**
