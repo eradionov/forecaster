@@ -6,5 +6,4 @@ namespace App\Exception;
 
 final class ValidationException extends \Exception
 {
-
 }

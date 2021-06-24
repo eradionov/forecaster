@@ -5,44 +5,80 @@ declare(strict_types=1);
 namespace App\Tests\Formatter;
 
 use App\DTO\CityWeatherForecast;
+use App\DTO\CityWeatherForecastDay;
+use App\DTO\MusementCity;
 use App\Formatter\ForecastFormatter;
 use PHPUnit\Framework\TestCase;
 
 final class ForecastFormatterTest extends TestCase
 {
-    public function testFormatterWithTwoDaysResponse(): void
+    /**
+     * @param array<int, array{name: string, latitude: float, longitude: float, forecast: CityWeatherForecast}> $musementCities
+     * @param array<int, string> $results
+     *
+     * @dataProvider musementCityProvider
+     */
+    public function testFormatterWithTwoDaysResponse(array $musementCities, array $results): void
     {
-        $cityWeatherForecast = new CityWeatherForecast();
-        $cityWeatherForecast->setForecasts(['Sunny', 'Cloudy']);
-        $cityWeatherForecast->setCity('New-York');
-        $forecastFormatter = new ForecastFormatter();
+        foreach ($musementCities as $key => $city) {
+            $musementCity = MusementCity::fromArray($city);
+            $forecastFormatter = new ForecastFormatter();
 
-        self::assertSame(
-            'Processed city New-York | Sunny - Cloudy',
-            $forecastFormatter->format($cityWeatherForecast->toArray())
-        );
+            self::assertSame(
+                $results[$key],
+                $forecastFormatter->format($musementCity)
+            );
+        }
     }
 
-    public function testFormatterWithThreeDaysResponse(): void
+    /**
+     * @return array<int, array>
+     */
+    public function musementCityProvider(): array
     {
-        $cityWeatherForecast = new CityWeatherForecast();
-        $cityWeatherForecast->setForecasts(['Sunny', 'Cloudy', 'Snowy']);
-        $cityWeatherForecast->setCity('New-York');
-        $forecastFormatter = new ForecastFormatter();
-
-        self::assertSame(
-            'Processed city New-York | Sunny - Cloudy - Snowy',
-            $forecastFormatter->format($cityWeatherForecast->toArray())
-        );
-    }
-
-    public function testFormatterWithEmptyDataResponse(): void
-    {
-        $cityWeatherForecast = new CityWeatherForecast();
-        $cityWeatherForecast->setForecasts([]);
-        $cityWeatherForecast->setCity('');
-        $forecastFormatter = new ForecastFormatter();
-
-        self::assertSame('Processed city  | ', $forecastFormatter->format($cityWeatherForecast->toArray()));
+        return [
+            [
+                [
+                    [
+                        'name' => 'Amsterdam',
+                        'latitude' => 43.16,
+                        'longitude' => 23.12,
+                        'forecast' => CityWeatherForecast::fromArray(
+                            [
+                                'forecastsDay' => [
+                                    CityWeatherForecastDay::create('Sunny'),
+                                    CityWeatherForecastDay::create('Cloudy'),
+                                ],
+                            ]
+                        ),
+                    ],
+                    [
+                        'name' => 'London',
+                        'latitude' => 43.16,
+                        'longitude' => 23.12,
+                        'forecast' => CityWeatherForecast::fromArray(
+                            [
+                                'forecastsDay' => [
+                                    CityWeatherForecastDay::create('Snowy'),
+                                    CityWeatherForecastDay::create('Rainy'),
+                                    CityWeatherForecastDay::create('Cloudy'),
+                                ],
+                            ]
+                        ),
+                    ],
+                    [
+                        'name' => 'Minsk',
+                        'latitude' => 43.16,
+                        'longitude' => 23.12,
+                        'forecast' => CityWeatherForecast::fromArray(['forecastsDay' => []]),
+                    ],
+                ],
+                [
+                    'Processed city Amsterdam | Sunny - Cloudy',
+                    'Processed city London | Snowy - Rainy - Cloudy',
+                    'Processed city Minsk | ',
+                ],
+            ],
+        ];
     }
 }

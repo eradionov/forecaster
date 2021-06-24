@@ -6,14 +6,12 @@ namespace App\WeatherForecast;
 
 use App\ApiClient\Interfaces\MusementApiInterface;
 use App\ApiClient\Interfaces\WeatherApiInterface;
-use App\DTO\CityWeatherForecast;
 use App\DTO\MusementCity;
 use App\Exception\HttpResponseException;
 use App\Exception\MusementCityProcessingException;
 use App\Exception\ValidationException;
 use App\Renderer\WeatherForecastRendererInterface;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\Validator\ConstraintViolationList;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
@@ -74,6 +72,17 @@ final class WeatherForecastDetector
         foreach ($cities as $city) {
             try {
                 $this->populateCityWeather($city, $days);
+
+                $errors = $this->validator->validate($city);
+
+                if (\count($errors) > 0) {
+                    /* @phpstan-ignore-next-line */
+                    $this->consoleNotifier->debug((string) $errors);
+
+                    $hasErrors = true;
+
+                    continue;
+                }
 
                 $this->renderer->render($city);
             } catch (\Throwable $exception) {

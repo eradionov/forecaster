@@ -9,38 +9,38 @@ use Symfony\Component\Validator\Constraints as Assert;
 final class CityWeatherForecast
 {
     /**
-     * @var array<int, string>
+     * @var array<CityWeatherForecastDay>
      *
-     * @Assert\NotBlank(message="City forecasts are required.")
+     * @Assert\NotBlank(message="Daily forecasts is required")
      */
-    private array $forecasts;
+    private array $forecastsDay;
 
     /**
-     * @param array{city: string, forecasts: array<int, string>} $data
+     * @param array{forecastsDay: array<CityWeatherForecastDay>} $data
      *
      * @return CityWeatherForecast
      */
     public static function fromArray(array $data): self
     {
         $cityWeatherForecast = new self();
-        $cityWeatherForecast->setForecasts($data['forecasts']);
+        $cityWeatherForecast->setForecastsDay($data['forecastsDay']);
 
         return $cityWeatherForecast;
     }
 
     /**
-     * @return array<int, string>
+     * @return array<CityWeatherForecastDay>
      */
-    public function getForecasts(): array
+    public function getForecastsDay(): array
     {
-        return $this->forecasts;
+        return $this->forecastsDay;
     }
 
     /**
-     * @param array<int, string> $forecasts
+     * @param array<CityWeatherForecastDay> $forecastsDay
      */
-    public function setForecasts(array $forecasts): void
+    public function setForecastsDay(array $forecastsDay): void
     {
-        $this->forecasts = $forecasts;
+        $this->forecastsDay = $forecastsDay;
     }
 }

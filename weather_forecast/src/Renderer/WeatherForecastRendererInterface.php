@@ -2,7 +2,6 @@
 
 namespace App\Renderer;
 
-use App\DTO\CityWeatherForecast;
 use App\DTO\MusementCity;
 
 interface WeatherForecastRendererInterface

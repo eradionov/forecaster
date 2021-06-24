@@ -4,10 +4,8 @@ declare(strict_types=1);
 
 namespace App\Renderer;
 
-use App\DTO\CityWeatherForecast;
 use App\DTO\MusementCity;
 use App\Exception\InvalidFormatException;
-use App\Formatter\ArrayToStringFormatterInterface;
 use App\Formatter\MusementCityWeatherFormatterInterface;
 use Psr\Log\LoggerInterface;
 

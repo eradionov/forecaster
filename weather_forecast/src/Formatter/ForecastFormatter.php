@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Formatter;
 
 use App\DTO\MusementCity;
-use App\Exception\InvalidFormatException;
 
 final class ForecastFormatter implements MusementCityWeatherFormatterInterface
 {
@@ -14,10 +13,16 @@ final class ForecastFormatter implements MusementCityWeatherFormatterInterface
      */
     public function format(MusementCity $city): string
     {
+        $forecasts = [];
+
+        foreach ($city->getForecast()->getForecastsDay() as $dailyForecast) {
+            $forecasts[] = $dailyForecast->getCondition();
+        }
+
         return sprintf(
             'Processed city %s | %s',
             $city->getName(),
-            implode(' - ', $city->getForecast()->getForecasts() ?? [])
+            implode(' - ', $forecasts)
         );
     }
 }
