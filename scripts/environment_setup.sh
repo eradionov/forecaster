@@ -1,31 +1,26 @@
 #!/bin/bash
-
-if [[ $_ != $0 ]]
-then
-  echo "Please, execute script from scripts directory directly"
-  exit 1
-fi
-
+set -euo pipefail
+cd "${0%/*}"
 declare -A ENV_FILES=( [".env"]=".env.local" [".php-cs-fixer.dist.php"]=".php-cs-fixer.php" \
                   ["phpunit.xml.dist"]="phpunit.xml" ["phpstan.neon.dist"]="phpstan.neon" )
 
-PROJECT_DIR="$( cd "../$( dirname "$0" )/weather_forecast" && pwd )"
+PROJECT_DIR="$( cd "../weather_forecast" && pwd )"
 
-COLOUR_GREEN=`tput setaf 2`
-RESET=`tput sgr0`
-RED=`tput setaf 1`
+COLOUR_GREEN=$(tput setaf 2)
+RESET=$(tput sgr0)
+RED=$(tput setaf 1)
 
 getUserEnvParams () {
     USER_INPUT=''
 
     while IFS= read -r -N 1 ch; do
         case "$ch" in
-            $'\n'|' '|$'\t') got_eot=1;break   ;&
+            $'\n'|' '|$'\t') break   ;&
             *)      USER_INPUT="$USER_INPUT$ch" ;;
         esac
     done
 
-    echo "$USER_INPUT"
+    echo "${USER_INPUT//[^a-zA-Z0-9]//g}"
 }
 
 setupLocalEnvironmentFileConfiguration () {
@@ -37,14 +32,14 @@ setupLocalEnvironmentFileConfiguration () {
 
     cp "$PROJECT_DIR/$1" "$PROJECT_DIR/$2"
 
-    SECRET_KEY=$(echo "${SECRET_KEY}" | sed -e 's/[^a-zA-Z0-9]//g' )
-    WEATHER_API_KEY=$(echo "${WEATHER_API_KEY}" | sed -e 's/[^a-zA-Z0-9]//g' )
-
     sed  -i -E 's/WEATHER_API_KEY=.*/WEATHER_API_KEY='"$WEATHER_API_KEY"'/' "$PROJECT_DIR/$2"
     sed -i -E 's/APP_SECRET=.*/APP_SECRET='"$SECRET_KEY"'/' "$PROJECT_DIR/$2"
+}
 
+buildContainer () {
     echo "${COLOUR_GREEN}Building docker image...${RESET}"
 
+    docker-compose rm -vf
     docker-compose build
 
     echo "${COLOUR_GREEN}Install composer packages...${RESET}"
@@ -60,12 +55,16 @@ do
   then
     if [[ $FILE = ".env" ]] && [[ ${ENV_FILES[$FILE]} = ".env.local" ]]
     then
-      setupLocalEnvironmentFileConfiguration $FILE ${ENV_FILES[$FILE]}
+      setupLocalEnvironmentFileConfiguration "$FILE" "${ENV_FILES[$FILE]}"
     else
       echo -e "${COLOUR_GREEN}Configuring ${ENV_FILES[$FILE]} settings...${RESET}"
       cp "${PROJECT_DIR}/$FILE" "${PROJECT_DIR}/${ENV_FILES[$FILE]}"
     fi
   else
-    echo -e "${RED}${ENV_FILES[$FILE]} already exists.${RESET}"
+    echo -e "${COLOUR_GREEN}${ENV_FILES[$FILE]} already exists and will not be copied.${RESET}"
   fi
 done
+
+buildContainer
+
+echo -e "${RED}If you passed incorrect values for WEATHER_API_KEY or APP_SECRET, please modify .env.local file and invoke this script again.${RESET}"

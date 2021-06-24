@@ -12,43 +12,44 @@ Weather Forecast is a symfony command, that displays forecast for each musement 
 
 ## Installation
 
-To setup project it's needed to cd into scripts folder in cloned directory root and run **environment_setup.sh**  script.<br/>
-You will be asked to pass some environment parameter values, that will be written into .env.dev file
+To setup project invoke **environment_setup.sh** script.<br/>
+You will be needed to pass APP_SECRET and WEATHER_API_KEY values
+If you passed incorrect values for WEATHER_API_KEY or APP_SECRET, please modify .env.local file and invoke this script again.
 
 ```bash
-./environment_setup.sh
+./scripts/environment_setup.sh
 ```
 
 ## Usage
 
-### To start development environment **environment_start.sh** script is used
+### To start development environment use **environment_start.sh** script
 
 ```bash
-./environment_start.sh           # Start dev environment
-./environment_start.sh --help    # Display help
-./environment_start.sh --detach  # Start dev environment in detached mode
-./environment_start.sh --stop    # Stop dev environment
-./environment_start.sh --help    # Display help
+./scripts/environment_start.sh           # Start dev environment
+./scripts/environment_start.sh --help    # Display help
+./scripts/environment_start.sh --detach  # Start dev environment in detached mode
+./scripts/environment_start.sh --stop    # Stop dev environment
+./scripts/environment_start.sh --help    # Display help
 ```
 
-### To run available code-style fixing and analyzing tools  **environment_tools.sh** script is used
+### To run available code-style fixing and analyzing tools use **environment_tools.sh** script
 
 ```bash
-./environment_tools.sh --phpunit         # Run phpunit tests on project code
-./environment_tools.sh --fixer           # Run code style php-cs-fixer on project code
-./environment_tools.sh --phpstan         # Run phpstan analyzer on project code
-./environment_start.sh --all             # Run all tools at once
-./environment_start.sh --help            # Display help
+./scripts/environment_tools.sh --phpunit         # Run phpunit tests on project code
+./scripts/environment_tools.sh --fixer           # Run code style php-cs-fixer on project code
+./scripts/environment_tools.sh --phpstan         # Run phpstan analyzer on project code
+./scripts/environment_start.sh --all             # Run all tools at once
+./scripts/environment_start.sh --help            # Display help
 ```
 
-### To run weather-forecast generation **run_forecast.sh** script is used
+### To run weather-forecast generation use **run_forecast.sh** script
 
 All forecasts will be displayed in a console.
 
 ```bash
-./run_forecast.sh   # Run weather-forecast command
+./scripts/run_forecast.sh   # Run weather-forecast command
 ```
 
-## Points for improvement
-Redis key-value in-memory storage can be used to store forecasts, that will prevent API request hit if command is invoked
-several times on the same day.
+## Possible improvement
+Redis key-value in-memory storage can be used to store forecastsю
+It will prevent API request hits if command is invoked several times on the same day.

@@ -1,14 +1,7 @@
 #!/bin/bash
-
-if [[ $_ != $0 ]]
-then
-  echo "Please, execute script from scripts directory directly"
-  exit 1
-fi
-
-PROJECT_DIR="$( cd "../$( dirname "$0" )" && pwd )"
-COLOUR_GREEN=`tput setaf 2`
-RESET=`tput sgr0`
+set -euo pipefail
+COLOUR_GREEN=$(tput setaf 2)
+RESET=$(tput sgr0)
 
 case $1 in
      '--detach'|'-d')
