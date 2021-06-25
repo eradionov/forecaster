@@ -90,7 +90,7 @@ final class WeatherForecastDetector
             try {
                 $cityForecast = $this->getCityForecast($city, $days);
 
-                if (!$cityForecast) {
+                if ($cityForecast === null) {
                     $hasErrors = true;
 
                     continue;
