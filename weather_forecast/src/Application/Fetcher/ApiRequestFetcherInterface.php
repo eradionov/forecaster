@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Application\Handler;
+namespace App\Application\Fetcher;
 
 use App\Utils\RequestParams;
 
-interface ApiRequestHandlerInterface
+interface ApiRequestFetcherInterface
 {
     /**
      * @param RequestParams|null $requestParams
