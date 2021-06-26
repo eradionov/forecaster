@@ -6,6 +6,6 @@ services:
         build: ./docker/php
         tty: true
         working_dir: /var/www/html
-        env_file: ./weather_forecast/.env.dev
+        env_file: ./weather_forecast/.env.local
         volumes:
             - ./weather_forecast:/var/www/html
