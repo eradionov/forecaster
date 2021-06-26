@@ -25,7 +25,7 @@ class MusementCityForecastApiFetcherTest extends TestCase
     /** @var SerializerInterface */
     private SerializerInterface $serializer;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->httpClient = $this->createMock(HttpClientInterface::class);
         $this->response = $this->createMock(ResponseInterface::class);

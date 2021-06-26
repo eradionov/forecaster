@@ -48,7 +48,7 @@ final class WeatherForecast extends Command
             null,
             InputArgument::OPTIONAL,
             'Number of days to generate forecast.',
-            strval(self::DEFAULT_DAYS)
+            (string) (self::DEFAULT_DAYS)
         );
     }
 
@@ -58,7 +58,7 @@ final class WeatherForecast extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         try {
-            if (is_string($input->getOption(self::ARGUMENT_DAYS))) {
+            if (\is_string($input->getOption(self::ARGUMENT_DAYS))) {
                 $days = (int) $input->getOption(self::ARGUMENT_DAYS);
             }
 
