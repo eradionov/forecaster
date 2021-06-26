@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Tests;
+namespace App\Tests\WeatherForecast;
 
 use App\DTO\CityWeatherForecast;
 use App\DTO\MusementCity;
 use App\Fetcher\MusementCityApiFetcher;
 use App\Fetcher\MusementCityForecastApiFetcher;
 use App\Renderer\WeatherForecastRendererInterface;
-use App\WeatherForecastDetector;
+use App\WeatherForecast\WeatherForecastDetector;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;

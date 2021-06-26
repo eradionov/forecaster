@@ -17,9 +17,7 @@ final class ForecastFormatterTest extends TestCase
         $cityWeatherForecast->setCity('New-York');
 
         self::assertSame(
-            sprintf(
-                'Processed city New-York | Sunny - Cloudy',
-            ),
+            'Processed city New-York | Sunny - Cloudy',
             ForecastFormatter::format($cityWeatherForecast)
         );
     }
@@ -31,9 +29,7 @@ final class ForecastFormatterTest extends TestCase
         $cityWeatherForecast->setCity('New-York');
 
         self::assertSame(
-            sprintf(
-                'Processed city New-York | Sunny - Cloudy - Snowy',
-            ),
+            'Processed city New-York | Sunny - Cloudy - Snowy',
             ForecastFormatter::format($cityWeatherForecast)
         );
     }
@@ -44,11 +40,6 @@ final class ForecastFormatterTest extends TestCase
         $cityWeatherForecast->setForecasts([]);
         $cityWeatherForecast->setCity('');
 
-        self::assertSame(
-            sprintf(
-                'Processed city  | ',
-            ),
-            ForecastFormatter::format($cityWeatherForecast)
-        );
+        self::assertSame('Processed city  | ', ForecastFormatter::format($cityWeatherForecast));
     }
 }

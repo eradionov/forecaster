@@ -19,16 +19,16 @@ class MusementCityApiFetcher implements ApiRequestFetcherInterface
     private const API_CITIES_ENDPOINT = '/api/v3/cities';
 
     private HttpClientInterface $musementCityClient;
-    private SerializerInterface $serializer;
+    private SerializerInterface $apiMusementSerialiser;
 
     /**
      * @param HttpClientInterface $musementCityClient
-     * @param SerializerInterface $serializer
+     * @param SerializerInterface $apiMusementSerialiser
      */
-    public function __construct(HttpClientInterface $musementCityClient, SerializerInterface $serializer)
+    public function __construct(HttpClientInterface $musementCityClient, SerializerInterface $apiMusementSerialiser)
     {
         $this->musementCityClient = $musementCityClient;
-        $this->serializer = $serializer;
+        $this->apiMusementSerialiser = $apiMusementSerialiser;
     }
 
     /**
@@ -54,7 +54,7 @@ class MusementCityApiFetcher implements ApiRequestFetcherInterface
             throw new HttpResponseException(sprintf('Cities request finished with error HTTP code: %d', $response->getStatusCode()));
         }
 
-        return $this->serializer->deserialize(
+        return $this->apiMusementSerialiser->deserialize(
             $response->getContent(), 'App\DTO\MusementCity[]', 'json'
         );
     }

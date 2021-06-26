@@ -20,16 +20,16 @@ class MusementCityForecastApiFetcher implements ApiRequestFetcherInterface
     private const API_CITY_FORECAST_ENDPOINT = '/v1/forecast.json';
 
     private HttpClientInterface $cityForecastClient;
-    private SerializerInterface $serializer;
+    private SerializerInterface $apiMusementSerialiser;
 
     /**
      * @param HttpClientInterface $cityForecastClient
-     * @param SerializerInterface $serializer
+     * @param SerializerInterface $apiMusementSerialiser
      */
-    public function __construct(HttpClientInterface $cityForecastClient, SerializerInterface $serializer)
+    public function __construct(HttpClientInterface $cityForecastClient, SerializerInterface $apiMusementSerialiser)
     {
         $this->cityForecastClient = $cityForecastClient;
-        $this->serializer = $serializer;
+        $this->apiMusementSerialiser = $apiMusementSerialiser;
     }
 
     /**
@@ -55,7 +55,7 @@ class MusementCityForecastApiFetcher implements ApiRequestFetcherInterface
             throw new HttpResponseException(sprintf('Weather forecast request finished with error HTTP code: %d', $response->getStatusCode()));
         }
 
-        return $this->serializer->deserialize(
+        return $this->apiMusementSerialiser->deserialize(
             $response->getContent(),
             CityWeatherForecast::class,
             'json'
