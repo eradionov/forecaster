@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Application\Renderer;
+namespace App\Renderer;
 
-use App\Application\DTO\CityWeatherForecast;
-use App\Application\Formatter\ForecastFormatter;
+use App\DTO\CityWeatherForecast;
+use App\Formatter\ForecastFormatter;
 use Psr\Log\LoggerInterface;
 
 final class ConsoleWeatherForecastRenderer implements WeatherForecastRendererInterface

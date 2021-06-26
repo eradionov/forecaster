@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Infrastructure\Command;
+namespace App\Command;
 
-use App\Application\Exception\MusementCityProcessingException;
-use App\Application\WeatherForecastDetector;
 use App\Exception\HttpResponseException;
+use App\Exception\MusementCityProcessingException;
+use App\WeatherForecastDetector;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;

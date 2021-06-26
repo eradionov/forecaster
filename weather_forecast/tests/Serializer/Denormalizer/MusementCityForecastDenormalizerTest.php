@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Serializer\Denormalizer;
 
-use App\Application\DTO\CityWeatherForecast;
-use App\Application\Serializer\Denormalizer\MusementCityForecastDenormalizer;
+use App\DTO\CityWeatherForecast;
+use App\Serializer\Denormalizer\MusementCityForecastDenormalizer;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 

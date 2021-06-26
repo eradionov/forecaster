@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Tests;
 
-use App\Application\DTO\CityWeatherForecast;
-use App\Application\DTO\MusementCity;
-use App\Application\Fetcher\MusementCityApiFetcher;
-use App\Application\Fetcher\MusementCityForecastApiFetcher;
-use App\Application\Renderer\WeatherForecastRendererInterface;
-use App\Application\WeatherForecastDetector;
+use App\DTO\CityWeatherForecast;
+use App\DTO\MusementCity;
+use App\Fetcher\MusementCityApiFetcher;
+use App\Fetcher\MusementCityForecastApiFetcher;
+use App\Renderer\WeatherForecastRendererInterface;
+use App\WeatherForecastDetector;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
