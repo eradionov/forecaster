@@ -10,6 +10,7 @@ return (new PhpCsFixer\Config())
     ->setRules([
         '@PSR12' => true,
         '@Symfony' => true,
+        '@Symfony:risky' => true,
         'ordered_imports' => true,
         'strict_param' => true,
         'array_syntax' => ['syntax' => 'short'],

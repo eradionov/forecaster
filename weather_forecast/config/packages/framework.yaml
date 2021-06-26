@@ -11,7 +11,18 @@ framework:
         cookie_secure: auto
         cookie_samesite: lax
         storage_factory_id: session.storage.factory.native
+    http_client:
+        scoped_clients:
+            musement.city.client:
+                base_uri: 'https://api.musement.com'
+                headers:
+                    Accept: 'application/json'
 
+            city.forecast.client:
+                base_uri: 'http://api.weatherapi.com'
+                headers:
+                    Accept: 'application/json'
+                    key: '%env(WEATHER_API_KEY)%'
     #esi: true
     #fragments: true
     php_errors:
