@@ -22,7 +22,7 @@ class MusementCityApiFetcherTest extends TestCase
     /** @var ResponseInterface&MockObject */
     private ResponseInterface $response;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->httpClient = $this->createMock(HttpClientInterface::class);
         $this->response = $this->createMock(ResponseInterface::class);
