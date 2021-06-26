@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Application\Fetcher;
+namespace App\Tests\Fetcher;
 
 use App\Application\DTO\CityWeatherForecast;
-use App\Application\Factory\MusementCityForecastSerializerFactory;
 use App\Application\Fetcher\MusementCityForecastApiFetcher;
+use App\Factory\MusementApiSerializerFactory;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Response;
@@ -29,7 +29,7 @@ class MusementCityForecastApiFetcherTest extends TestCase
     {
         $this->httpClient = $this->createMock(HttpClientInterface::class);
         $this->response = $this->createMock(ResponseInterface::class);
-        $this->serializer = MusementCityForecastSerializerFactory::build();
+        $this->serializer = MusementApiSerializerFactory::build();
     }
 
     /**

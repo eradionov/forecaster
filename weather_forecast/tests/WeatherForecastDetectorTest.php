@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Application;
+namespace App\Tests;
 
 use App\Application\DTO\CityWeatherForecast;
 use App\Application\DTO\MusementCity;
