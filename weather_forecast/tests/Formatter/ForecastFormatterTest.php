@@ -15,10 +15,11 @@ final class ForecastFormatterTest extends TestCase
         $cityWeatherForecast = new CityWeatherForecast();
         $cityWeatherForecast->setForecasts(['Sunny', 'Cloudy']);
         $cityWeatherForecast->setCity('New-York');
+        $forecastFormatter = new ForecastFormatter();
 
         self::assertSame(
             'Processed city New-York | Sunny - Cloudy',
-            ForecastFormatter::format($cityWeatherForecast)
+            $forecastFormatter->format($cityWeatherForecast->toArray())
         );
     }
 
@@ -27,10 +28,11 @@ final class ForecastFormatterTest extends TestCase
         $cityWeatherForecast = new CityWeatherForecast();
         $cityWeatherForecast->setForecasts(['Sunny', 'Cloudy', 'Snowy']);
         $cityWeatherForecast->setCity('New-York');
+        $forecastFormatter = new ForecastFormatter();
 
         self::assertSame(
             'Processed city New-York | Sunny - Cloudy - Snowy',
-            ForecastFormatter::format($cityWeatherForecast)
+            $forecastFormatter->format($cityWeatherForecast->toArray())
         );
     }
 
@@ -39,7 +41,8 @@ final class ForecastFormatterTest extends TestCase
         $cityWeatherForecast = new CityWeatherForecast();
         $cityWeatherForecast->setForecasts([]);
         $cityWeatherForecast->setCity('');
+        $forecastFormatter = new ForecastFormatter();
 
-        self::assertSame('Processed city  | ', ForecastFormatter::format($cityWeatherForecast));
+        self::assertSame('Processed city  | ', $forecastFormatter->format($cityWeatherForecast->toArray()));
     }
 }

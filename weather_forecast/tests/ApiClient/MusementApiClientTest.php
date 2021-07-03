@@ -2,11 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Fetcher;
+namespace App\Tests\ApiClient;
 
+use App\ApiClient\MusementApiClient;
 use App\DTO\MusementCity;
-use App\Factory\MusementApiSerializerFactory;
-use App\Fetcher\MusementCityApiFetcher;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Response;
@@ -14,7 +13,7 @@ use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Contracts\HttpClient\ResponseInterface;
 
-class MusementCityApiFetcherTest extends TestCase
+class MusementApiClientTest extends TestCase
 {
     /** @var HttpClientInterface&MockObject */
     private HttpClientInterface $httpClient;
@@ -22,10 +21,14 @@ class MusementCityApiFetcherTest extends TestCase
     /** @var ResponseInterface&MockObject */
     private ResponseInterface $response;
 
+    /** @var SerializerInterface&MockObject */
+    private SerializerInterface $serializer;
+
     protected function setUp(): void
     {
         $this->httpClient = $this->createMock(HttpClientInterface::class);
         $this->response = $this->createMock(ResponseInterface::class);
+        $this->serializer = $this->createMock(SerializerInterface::class);
     }
 
     public function testEmptyApiResponse(): void
@@ -36,18 +39,16 @@ class MusementCityApiFetcherTest extends TestCase
         $this->httpClient->method('request')
             ->willReturn($this->response);
 
-        $apiFetcher = new MusementCityApiFetcher($this->httpClient, $this->createMock(SerializerInterface::class));
+        $apiFetcher = new MusementApiClient($this->serializer, $this->httpClient);
 
-        $response = $apiFetcher->fetch();
-
-        self::assertNull($response);
+        self::assertEmpty($apiFetcher->getAllMusementCities());
     }
 
     public function testHttpExceptionResponse(): void
     {
         $this->expectExceptionMessage(
             sprintf(
-                'Cities request finished with error HTTP code: %d',
+                'Request finished with error HTTP code: %d',
                 Response::HTTP_INTERNAL_SERVER_ERROR
             )
         );
@@ -58,9 +59,9 @@ class MusementCityApiFetcherTest extends TestCase
         $this->httpClient->method('request')
             ->willReturn($this->response);
 
-        $apiFetcher = new MusementCityApiFetcher($this->httpClient, $this->createMock(SerializerInterface::class));
+        $apiFetcher = new MusementApiClient($this->serializer, $this->httpClient);
 
-        $apiFetcher->fetch();
+        $apiFetcher->getAllMusementCities();
     }
 
     /**
@@ -74,13 +75,14 @@ class MusementCityApiFetcherTest extends TestCase
 
         $this->response->method('getStatusCode')->willReturn(Response::HTTP_OK);
         $this->response->method('getContent')->willReturn(json_encode($responseData));
+        $this->serializer->method('deserialize')->willReturn([$musementCityMock]);
 
         $this->httpClient->method('request')
             ->willReturn($this->response);
 
-        $apiFetcher = new MusementCityApiFetcher($this->httpClient, MusementApiSerializerFactory::build());
+        $apiFetcher = new MusementApiClient($this->serializer, $this->httpClient);
 
-        $response = $apiFetcher->fetch();
+        $response = $apiFetcher->getAllMusementCities();
 
         self::assertNotEmpty($response);
         self::assertEquals($musementCityMock, $response[0]);
