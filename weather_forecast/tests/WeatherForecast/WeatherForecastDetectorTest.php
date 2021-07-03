@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace App\Tests\WeatherForecast;
 
+use App\ApiClient\Interfaces\MusementApiInterface;
+use App\ApiClient\Interfaces\WeatherApiInterface;
+use App\ApiClient\MusementApiClient;
+use App\ApiClient\WeatherApiClient;
 use App\DTO\CityWeatherForecast;
 use App\DTO\MusementCity;
-use App\Fetcher\MusementCityApiFetcher;
-use App\Fetcher\MusementCityForecastApiFetcher;
 use App\Renderer\WeatherForecastRendererInterface;
 use App\WeatherForecast\WeatherForecastDetector;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -29,11 +31,11 @@ final class WeatherForecastDetectorTest extends TestCase
     /** @var WeatherForecastRendererInterface&MockObject */
     private WeatherForecastRendererInterface $renderer;
 
-    /** @var MusementCityApiFetcher&MockObject */
-    private MusementCityApiFetcher $musementCityApiFetcher;
+    /** @var MusementApiInterface&MockObject */
+    private MusementApiInterface $musementApiClient;
 
-    /** @var MusementCityForecastApiFetcher&MockObject */
-    private MusementCityForecastApiFetcher $musementCityForecastApiFetcher;
+    /** @var WeatherApiInterface&MockObject */
+    private WeatherApiInterface $cityWeatherApiClient;
 
     protected function setUp(): void
     {
@@ -41,48 +43,20 @@ final class WeatherForecastDetectorTest extends TestCase
         $this->notifier = $this->createMock(LoggerInterface::class);
         $this->renderer = $this->createMock(WeatherForecastRendererInterface::class);
 
-        $this->musementCityApiFetcher = $this->createMock(MusementCityApiFetcher::class);
-        $this->musementCityForecastApiFetcher = $this->createMock(MusementCityForecastApiFetcher::class);
-    }
-
-    public function testNegativeNumberOfForecastDays(): void
-    {
-        $this->expectExceptionMessage('Number of days to forecast weather should be positive.');
-        $weatherForecastDetector = new WeatherForecastDetector(
-            $this->musementCityApiFetcher,
-            $this->musementCityForecastApiFetcher,
-            $this->validator,
-            $this->notifier,
-            $this->renderer
-        );
-
-        $weatherForecastDetector->detect(-5);
-    }
-
-    public function testZeroNumberOfForecastDays(): void
-    {
-        $this->expectExceptionMessage('Number of days to forecast weather should be positive.');
-        $weatherForecastDetector = new WeatherForecastDetector(
-            $this->musementCityApiFetcher,
-            $this->musementCityForecastApiFetcher,
-            $this->validator,
-            $this->notifier,
-            $this->renderer
-        );
-
-        $weatherForecastDetector->detect(0);
+        $this->musementApiClient = $this->createMock(MusementApiClient::class);
+        $this->cityWeatherApiClient = $this->createMock(WeatherApiClient::class);
     }
 
     public function testInvalidMusementCity(): void
     {
         $this->expectExceptionMessage(self::DEFAULT_ERROR_MESSAGE);
 
-        $this->musementCityApiFetcher->method('fetch')->willReturn([new MusementCity()]);
+        $this->musementApiClient->method('getAllMusementCities')->willReturn([new MusementCity()]);
         $this->validator->method('validate')->willReturn([]);
 
         $weatherForecastDetector = new WeatherForecastDetector(
-            $this->musementCityApiFetcher,
-            $this->musementCityForecastApiFetcher,
+            $this->musementApiClient,
+            $this->cityWeatherApiClient,
             $this->validator,
             $this->notifier,
             $this->renderer
@@ -96,16 +70,39 @@ final class WeatherForecastDetectorTest extends TestCase
      *
      * @param array{name: string, latitude: float, longitude: float} $responseData
      */
+    public function testValidMusementCityWithoutForecastAndDayArgument(array $responseData): void
+    {
+        $this->expectExceptionMessage(self::DEFAULT_ERROR_MESSAGE);
+
+        $this->musementApiClient->method('getAllMusementCities')->willReturn([MusementCity::fromArray($responseData)]);
+        $this->validator->method('validate')->willReturn([]);
+
+        $weatherForecastDetector = new WeatherForecastDetector(
+            $this->musementApiClient,
+            $this->cityWeatherApiClient,
+            $this->validator,
+            $this->notifier,
+            $this->renderer
+        );
+
+        $weatherForecastDetector->detect(0);
+    }
+
+    /**
+     * @dataProvider getMusementApiResponse
+     *
+     * @param array{name: string, latitude: float, longitude: float} $responseData
+     */
     public function testValidMusementCityWithoutForecast(array $responseData): void
     {
         $this->expectExceptionMessage(self::DEFAULT_ERROR_MESSAGE);
 
-        $this->musementCityApiFetcher->method('fetch')->willReturn([MusementCity::fromArray($responseData)]);
+        $this->musementApiClient->method('getAllMusementCities')->willReturn([MusementCity::fromArray($responseData)]);
         $this->validator->method('validate')->willReturn([]);
 
         $weatherForecastDetector = new WeatherForecastDetector(
-            $this->musementCityApiFetcher,
-            $this->musementCityForecastApiFetcher,
+            $this->musementApiClient,
+            $this->cityWeatherApiClient,
             $this->validator,
             $this->notifier,
             $this->renderer
@@ -123,14 +120,14 @@ final class WeatherForecastDetectorTest extends TestCase
      */
     public function testValidMusementCityWithForecasts(array $responseData, array $forecasts): void
     {
-        $this->musementCityApiFetcher->method('fetch')->willReturn([MusementCity::fromArray($responseData)]);
+        $this->musementApiClient->method('getAllMusementCities')->willReturn([MusementCity::fromArray($responseData)]);
         $this->validator->method('validate')->willReturn([]);
 
-        $this->musementCityForecastApiFetcher->method('fetch')->willReturn(CityWeatherForecast::fromArray($forecasts));
+        $this->cityWeatherApiClient->method('getCityWeatherForecast')->willReturn(CityWeatherForecast::fromArray($forecasts));
 
         $weatherForecastDetector = new WeatherForecastDetector(
-            $this->musementCityApiFetcher,
-            $this->musementCityForecastApiFetcher,
+            $this->musementApiClient,
+            $this->cityWeatherApiClient,
             $this->validator,
             $this->notifier,
             $this->renderer

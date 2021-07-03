@@ -46,6 +46,6 @@ final class MusementCityForecastDenormalizer implements DenormalizerInterface
      */
     public function supportsDenormalization($data, string $type, string $format = null): bool
     {
-        return $type === CityWeatherForecast::class;
+        return CityWeatherForecast::class === $type;
     }
 }

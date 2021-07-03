@@ -25,13 +25,4 @@ services:
         tags:
             - { name: 'console.command', command: 'app:weather_forecast' }
 
-    App\Serializer\MusementApiSerializer:
-        factory: ['@App\Factory\MusementApiSerializerFactory', 'build']
-
-    App\Fetcher\MusementCityApiFetcher: ~
-    App\Fetcher\MusementCityForecastApiFetcher: ~
-
-    App\Fetcher\ApiRequestFetcherInterface $musementCityApiFetcher: '@App\Fetcher\MusementCityApiFetcher'
-    App\Fetcher\ApiRequestFetcherInterface $musementCityForecastApiFetcher: '@App\Fetcher\MusementCityForecastApiFetcher'
     Psr\Log\LoggerInterface $consoleNotifier: '@logger'
-    Symfony\Component\Serializer\SerializerInterface $apiMusementSerialiser: '@App\Serializer\MusementApiSerializer'

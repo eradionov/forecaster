@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\WeatherForecast;
 
+use App\ApiClient\Interfaces\MusementApiInterface;
+use App\ApiClient\Interfaces\WeatherApiInterface;
 use App\DTO\CityWeatherForecast;
 use App\DTO\MusementCity;
 use App\Exception\HttpResponseException;
 use App\Exception\MusementCityProcessingException;
-use App\Fetcher\ApiRequestFetcherInterface;
 use App\Renderer\WeatherForecastRendererInterface;
-use App\Utils\RequestParams;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Validator\ConstraintViolationList;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -21,35 +21,35 @@ use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
 final class WeatherForecastDetector
 {
-    private ApiRequestFetcherInterface $musementCityApiFetcher;
-    private ApiRequestFetcherInterface $musementCityForecastApiFetcher;
+    private MusementApiInterface $musementCityApiClient;
+    private WeatherApiInterface $weatherApiClient;
     private ValidatorInterface $validator;
     private LoggerInterface $consoleNotifier;
     private WeatherForecastRendererInterface $renderer;
 
     /**
-     * @param ApiRequestFetcherInterface $musementCityApiFetcher
-     * @param ApiRequestFetcherInterface $musementCityForecastApiFetcher
+     * @param MusementApiInterface $musementCityApiClient
+     * @param WeatherApiInterface $weatherApiClient
      * @param ValidatorInterface $validator
      * @param LoggerInterface $consoleNotifier
      * @param WeatherForecastRendererInterface $renderer
      */
     public function __construct(
-        ApiRequestFetcherInterface $musementCityApiFetcher,
-        ApiRequestFetcherInterface $musementCityForecastApiFetcher,
+        MusementApiInterface $musementCityApiClient,
+        WeatherApiInterface $weatherApiClient,
         ValidatorInterface $validator,
         LoggerInterface $consoleNotifier,
         WeatherForecastRendererInterface $renderer
     ) {
-        $this->musementCityApiFetcher = $musementCityApiFetcher;
-        $this->musementCityForecastApiFetcher = $musementCityForecastApiFetcher;
+        $this->musementCityApiClient = $musementCityApiClient;
+        $this->weatherApiClient = $weatherApiClient;
         $this->validator = $validator;
         $this->consoleNotifier = $consoleNotifier;
         $this->renderer = $renderer;
     }
 
     /**
-     * @param int $days
+     * @param int|null $days
      *
      * @throws MusementCityProcessingException if errors were detected during validation, API call and processing.
      * @throws HttpResponseException if response code is not 200.
@@ -59,16 +59,12 @@ final class WeatherForecastDetector
      * @throws ServerExceptionInterface On a 5xx when $throw is true
      * @throws \InvalidArgumentException if number of days to forecast weather is <= 0.
      */
-    public function detect(int $days): void
+    public function detect(?int $days = null): void
     {
-        if ($days <= 0) {
-            throw new \InvalidArgumentException('Number of days to forecast weather should be positive.');
-        }
-
-        $cities = $this->musementCityApiFetcher->fetch();
+        $cities = $this->musementCityApiClient->getAllMusementCities();
         $hasErrors = false;
 
-        if (\count($cities) === 0) {
+        if (0 === \count($cities)) {
             $this->consoleNotifier->info('There were no cities returned from \'Musement API\'');
 
             return;
@@ -80,7 +76,6 @@ final class WeatherForecastDetector
 
             if (\count($errors) > 0) {
                 $hasErrors = true;
-
                 /* @phpstan-ignore-next-line */
                 $this->consoleNotifier->debug((string) $errors);
 
@@ -88,9 +83,9 @@ final class WeatherForecastDetector
             }
 
             try {
-                $cityForecast = $this->getCityForecast($city, $days);
+                $cityForecast = $this->getCityWeather($city, $days);
 
-                if ($cityForecast === null) {
+                if (null === $cityForecast) {
                     $hasErrors = true;
 
                     continue;
@@ -110,21 +105,24 @@ final class WeatherForecastDetector
 
     /**
      * @param MusementCity $city
-     * @param int $days
+     * @param int|null $days
      *
      * @return CityWeatherForecast|null
+     *
+     * @throws HttpResponseException if response code is not 200.
+     * @throws TransportExceptionInterface When a network error occurs
+     * @throws RedirectionExceptionInterface On a 3xx when $throw is true and the "max_redirects" option has been reached
+     * @throws ClientExceptionInterface On a 4xx when $throw is true
+     * @throws ServerExceptionInterface On a 5xx when $throw is true
      */
-    private function getCityForecast(MusementCity $city, int $days): ?CityWeatherForecast
+    private function getCityWeather(MusementCity $city, ?int $days = null): ?CityWeatherForecast
     {
-        $cityWeatherForecast = $this->musementCityForecastApiFetcher->fetch(
-            RequestParams::create([
-                    'days' => $days,
-                    'q' => sprintf('%f,%f', $city->getLatitude(), $city->getLongitude()),
-                ]
-            )
+        $cityForecast = $this->weatherApiClient->getCityWeatherForecast(
+            sprintf('%f,%f', $city->getLatitude(), $city->getLongitude()),
+            $days
         );
 
-        $errors = $this->validator->validate($cityWeatherForecast);
+        $errors = $this->validator->validate($cityForecast);
 
         if (\count($errors) > 0) {
             /* @phpstan-ignore-next-line */
@@ -133,6 +131,6 @@ final class WeatherForecastDetector
             return null;
         }
 
-        return $cityWeatherForecast;
+        return $cityForecast;
     }
 }
