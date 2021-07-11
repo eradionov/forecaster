@@ -2,16 +2,17 @@
 
 namespace App\Formatter;
 
+use App\DTO\MusementCity;
 use App\Exception\InvalidFormatException;
 
-interface ArrayToStringFormatterInterface
+interface MusementCityWeatherFormatterInterface
 {
     /**
-     * @param array<string, mixed> $data
+     * @param MusementCity $city
      *
      * @return string
      *
      * @throws InvalidFormatException if invalid array format passed
      */
-    public function format(array $data): string;
+    public function format(MusementCity $city): string;
 }

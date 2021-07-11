@@ -10,6 +10,7 @@ use App\DTO\CityWeatherForecast;
 use App\DTO\MusementCity;
 use App\Exception\HttpResponseException;
 use App\Exception\MusementCityProcessingException;
+use App\Exception\ValidationException;
 use App\Renderer\WeatherForecastRendererInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Validator\ConstraintViolationList;
@@ -71,27 +72,10 @@ final class WeatherForecastDetector
         }
 
         foreach ($cities as $city) {
-            /* @var ConstraintViolationList $errors */
-            $errors = $this->validator->validate($city);
-
-            if (\count($errors) > 0) {
-                $hasErrors = true;
-                /* @phpstan-ignore-next-line */
-                $this->consoleNotifier->debug((string) $errors);
-
-                continue;
-            }
-
             try {
-                $cityForecast = $this->getCityWeather($city, $days);
+                $this->populateCityWeather($city, $days);
 
-                if (null === $cityForecast) {
-                    $hasErrors = true;
-
-                    continue;
-                }
-
-                $this->renderer->render($cityForecast);
+                $this->renderer->render($city);
             } catch (\Throwable $exception) {
                 $hasErrors = true;
                 $this->consoleNotifier->debug($exception->getMessage());
@@ -107,15 +91,14 @@ final class WeatherForecastDetector
      * @param MusementCity $city
      * @param int|null $days
      *
-     * @return CityWeatherForecast|null
-     *
      * @throws HttpResponseException if response code is not 200.
      * @throws TransportExceptionInterface When a network error occurs
      * @throws RedirectionExceptionInterface On a 3xx when $throw is true and the "max_redirects" option has been reached
      * @throws ClientExceptionInterface On a 4xx when $throw is true
      * @throws ServerExceptionInterface On a 5xx when $throw is true
+     * @throws ValidationException if validation fails
      */
-    private function getCityWeather(MusementCity $city, ?int $days = null): ?CityWeatherForecast
+    private function populateCityWeather(MusementCity $city, ?int $days = null): void
     {
         $cityForecast = $this->weatherApiClient->getCityWeatherForecast(
             sprintf('%f,%f', $city->getLatitude(), $city->getLongitude()),
@@ -126,11 +109,9 @@ final class WeatherForecastDetector
 
         if (\count($errors) > 0) {
             /* @phpstan-ignore-next-line */
-            $this->consoleNotifier->debug((string) $errors);
-
-            return null;
+            throw new ValidationException((string) $errors);
         }
 
-        return $cityForecast;
+        $city->setForecast($cityForecast);
     }
 }
