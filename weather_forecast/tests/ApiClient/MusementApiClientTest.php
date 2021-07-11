@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Tests\ApiClient;
 
 use App\ApiClient\MusementApiClient;
+use App\DTO\CityWeatherForecast;
+use App\DTO\CityWeatherForecastDay;
 use App\DTO\MusementCity;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -67,7 +69,7 @@ class MusementApiClientTest extends TestCase
     /**
      * @dataProvider getMusementApiResponse
      *
-     * @param array<int, array{name: string, longitude: float, latitude: float}> $responseData
+     * @param array<int, array{name: string, longitude: float, latitude: float, forecast: CityWeatherForecast}> $responseData
      */
     public function testResponseWithData(array $responseData): void
     {
@@ -100,6 +102,15 @@ class MusementApiClientTest extends TestCase
                         'name' => 'Amsterdam',
                         'latitude' => 52.374,
                         'longitude' => 4.9,
+                        'forecast' => CityWeatherForecast::fromArray(
+                            [
+                                'forecastsDay' => [
+                                    CityWeatherForecastDay::create('Snowy'),
+                                    CityWeatherForecastDay::create('Rainy'),
+                                    CityWeatherForecastDay::create('Cloudy'),
+                                ],
+                            ]
+                        ),
                     ],
                 ],
             ],
